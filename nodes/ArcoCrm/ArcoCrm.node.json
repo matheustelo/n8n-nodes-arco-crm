@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-base.arcoCrm",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Sales", "Marketing"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://crm.grupoarco.cc/api/v1/docs"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/matheustelo/n8n-nodes-arco-crm"
+			}
+		]
+	}
+}
