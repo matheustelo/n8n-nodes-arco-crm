@@ -97,3 +97,6 @@ jobs:
           pnpm run release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # First-time publish: npm refuses to attach provenance unless
+          # --access=public is set explicitly (publishConfig is ignored here).
+          NPM_CONFIG_ACCESS: public
