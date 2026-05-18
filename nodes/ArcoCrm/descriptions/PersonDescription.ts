@@ -113,10 +113,13 @@ export const personDescription: INodeProperties[] = [
 				routing: { send: { type: 'body', property: 'organization_id' } },
 			},
 			{
-				displayName: 'Owner Membership ID',
+				displayName: 'Owner Membership Name or ID',
 				name: 'owner_membership_id',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadMemberships' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
 			{
@@ -148,10 +151,13 @@ export const personDescription: INodeProperties[] = [
 				routing: { send: { type: 'query', property: 'organization_id' } },
 			},
 			{
-				displayName: 'Owner Membership ID',
+				displayName: 'Owner Membership Name or ID',
 				name: 'owner_membership_id',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadMemberships' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'query', property: 'owner_membership_id' } },
 			},
 			{
@@ -203,10 +209,13 @@ export const personDescription: INodeProperties[] = [
 				routing: { send: { type: 'body', property: 'organization_id' } },
 			},
 			{
-				displayName: 'Owner Membership ID',
+				displayName: 'Owner Membership Name or ID',
 				name: 'owner_membership_id',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadMemberships' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
 			{

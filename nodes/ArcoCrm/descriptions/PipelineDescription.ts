@@ -1,5 +1,4 @@
 import type { INodeProperties } from 'n8n-workflow';
-import { entityResourceLocator } from '../shared/resourceLocator';
 import { limitProperty, returnAllProperty } from '../shared/pagination';
 
 export const pipelineDescription: INodeProperties[] = [
@@ -14,42 +13,21 @@ export const pipelineDescription: INodeProperties[] = [
 			{
 				name: 'List',
 				value: 'list',
-				action: 'List pipelines',
-				routing: { request: { method: 'GET', url: '/pipelines' } },
-			},
-			{
-				name: 'Get',
-				value: 'get',
-				action: 'Get a pipeline',
-				routing: {
-					request: {
-						method: 'GET',
-						url: '=/pipelines/{{ $parameter.pipeline_id.value || $parameter.pipeline_id }}',
-					},
-				},
-			},
-			{
-				name: 'List Stages',
-				value: 'listStages',
-				action: 'List a pipelines stages',
-				routing: {
-					request: {
-						method: 'GET',
-						url: '=/pipelines/{{ $parameter.pipeline_id.value || $parameter.pipeline_id }}/stages',
-					},
-				},
+				action: 'List lead pipelines',
+				routing: { request: { method: 'GET', url: '/v1/lead-pipelines' } },
 			},
 		],
 	},
 
-	entityResourceLocator({
-		displayName: 'Pipeline',
-		name: 'pipeline_id',
-		required: true,
-		searchListMethod: 'searchPipelines',
-		urlPathSegment: 'pipelines',
-		displayOptions: { show: { resource: ['pipeline'], operation: ['get', 'listStages'] } },
-	}),
+	{
+		displayName: 'Include Stages',
+		name: 'include_stages',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to embed each pipelines stages in the response',
+		displayOptions: { show: { resource: ['pipeline'], operation: ['list'] } },
+		routing: { send: { type: 'query', property: 'include_stages' } },
+	},
 
 	returnAllProperty({ resource: ['pipeline'], operation: ['list'] }),
 	limitProperty({ resource: ['pipeline'], operation: ['list'] }),

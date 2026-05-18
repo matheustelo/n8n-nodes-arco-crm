@@ -46,17 +46,19 @@ async function paginatedSearch<T>(
 type LeadRecord = { id: string; name: string; email?: string };
 type PersonRecord = { id: string; name: string; email?: string };
 type OrganizationRecord = { id: string; name: string };
-type DealRecord = { id: string; name: string };
+type DealRecord = { id: string; title: string };
 type ActivityRecord = { id: string; title: string };
 type TagRecord = { id: string; name: string };
-type PipelineRecord = { id: string; name: string };
+type PipelineRecord = { id: string; name: string; stages?: Array<{ id: string; name: string }> };
+type OriginRecord = { id: string; name: string };
+type MembershipRecord = { id: string; full_name: string; email?: string };
 
 export async function searchLeads(
 	this: ILoadOptionsFunctions,
 	filter?: string,
 	paginationToken?: string,
 ): Promise<INodeListSearchResult> {
-	return paginatedSearch<LeadRecord>(this, '/leads', filter, paginationToken, (lead) => ({
+	return paginatedSearch<LeadRecord>(this, '/v1/leads', filter, paginationToken, (lead) => ({
 		name: lead.email ? `${lead.name} (${lead.email})` : lead.name,
 		value: lead.id,
 	}));
@@ -67,7 +69,7 @@ export async function searchPeople(
 	filter?: string,
 	paginationToken?: string,
 ): Promise<INodeListSearchResult> {
-	return paginatedSearch<PersonRecord>(this, '/people', filter, paginationToken, (person) => ({
+	return paginatedSearch<PersonRecord>(this, '/v1/people', filter, paginationToken, (person) => ({
 		name: person.email ? `${person.name} (${person.email})` : person.name,
 		value: person.id,
 	}));
@@ -80,7 +82,7 @@ export async function searchOrganizations(
 ): Promise<INodeListSearchResult> {
 	return paginatedSearch<OrganizationRecord>(
 		this,
-		'/organizations',
+		'/v1/organizations',
 		filter,
 		paginationToken,
 		(org) => ({ name: org.name, value: org.id }),
@@ -92,8 +94,8 @@ export async function searchDeals(
 	filter?: string,
 	paginationToken?: string,
 ): Promise<INodeListSearchResult> {
-	return paginatedSearch<DealRecord>(this, '/deals', filter, paginationToken, (deal) => ({
-		name: deal.name,
+	return paginatedSearch<DealRecord>(this, '/v1/deals', filter, paginationToken, (deal) => ({
+		name: deal.title,
 		value: deal.id,
 	}));
 }
@@ -105,7 +107,7 @@ export async function searchActivities(
 ): Promise<INodeListSearchResult> {
 	return paginatedSearch<ActivityRecord>(
 		this,
-		'/activities',
+		'/v1/activities',
 		filter,
 		paginationToken,
 		(activity) => ({ name: activity.title, value: activity.id }),
@@ -120,7 +122,7 @@ export async function searchTags(
 ): Promise<INodeListSearchResult> {
 	return paginatedSearch<TagRecord>(
 		this,
-		'/tags',
+		'/v1/tags',
 		filter,
 		paginationToken,
 		(tag) => ({ name: tag.name, value: tag.id }),
@@ -135,10 +137,43 @@ export async function searchPipelines(
 ): Promise<INodeListSearchResult> {
 	return paginatedSearch<PipelineRecord>(
 		this,
-		'/pipelines',
+		'/v1/lead-pipelines',
 		filter,
 		paginationToken,
 		(pipeline) => ({ name: pipeline.name, value: pipeline.id }),
+		false,
+	);
+}
+
+export async function searchOrigins(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+	paginationToken?: string,
+): Promise<INodeListSearchResult> {
+	return paginatedSearch<OriginRecord>(
+		this,
+		'/v1/origins',
+		filter,
+		paginationToken,
+		(origin) => ({ name: origin.name, value: origin.id }),
+		false,
+	);
+}
+
+export async function searchMemberships(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+	paginationToken?: string,
+): Promise<INodeListSearchResult> {
+	return paginatedSearch<MembershipRecord>(
+		this,
+		'/v1/memberships',
+		filter,
+		paginationToken,
+		(member) => ({
+			name: member.email ? `${member.full_name} (${member.email})` : member.full_name,
+			value: member.id,
+		}),
 		false,
 	);
 }
@@ -154,14 +189,16 @@ export async function searchStages(
 
 	const response = (await this.helpers.httpRequestWithAuthentication.call(this, 'arcoCrmApi', {
 		method: 'GET',
-		url: `/pipelines/${pipelineParam}/stages`,
+		url: '/v1/lead-pipelines',
+		qs: { include_stages: true, limit: 100 },
 		json: true,
-	})) as ListEnvelope<{ id: string; name: string; position?: number }>;
+	})) as ListEnvelope<PipelineRecord>;
 
-	const records = Array.isArray(response?.data) ? response.data : [];
+	const pipeline = (response?.data ?? []).find((p) => p.id === pipelineParam);
+	const stages = pipeline?.stages ?? [];
 	const filtered = filter
-		? records.filter((stage) => stage.name.toLowerCase().includes(filter.toLowerCase()))
-		: records;
+		? stages.filter((stage) => stage.name.toLowerCase().includes(filter.toLowerCase()))
+		: stages;
 
 	return {
 		results: filtered.map((stage) => ({ name: stage.name, value: stage.id })),

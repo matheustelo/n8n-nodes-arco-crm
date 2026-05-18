@@ -19,7 +19,7 @@ export const activityDescription: INodeProperties[] = [
 				name: 'Create',
 				value: 'create',
 				action: 'Create an activity',
-				routing: { request: { method: 'POST', url: '/activities' } },
+				routing: { request: { method: 'POST', url: '/v1/activities' } },
 			},
 			{
 				name: 'Get',
@@ -28,7 +28,7 @@ export const activityDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'GET',
-						url: '=/activities/{{ $parameter.activity_id.value || $parameter.activity_id }}',
+						url: '=/v1/activities/{{ $parameter.activity_id.value || $parameter.activity_id }}',
 					},
 				},
 			},
@@ -36,7 +36,7 @@ export const activityDescription: INodeProperties[] = [
 				name: 'List',
 				value: 'list',
 				action: 'List activities',
-				routing: { request: { method: 'GET', url: '/activities' } },
+				routing: { request: { method: 'GET', url: '/v1/activities' } },
 			},
 			{
 				name: 'Update',
@@ -45,18 +45,7 @@ export const activityDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'PATCH',
-						url: '=/activities/{{ $parameter.activity_id.value || $parameter.activity_id }}',
-					},
-				},
-			},
-			{
-				name: 'Delete',
-				value: 'delete',
-				action: 'Delete an activity',
-				routing: {
-					request: {
-						method: 'DELETE',
-						url: '=/activities/{{ $parameter.activity_id.value || $parameter.activity_id }}',
+						url: '=/v1/activities/{{ $parameter.activity_id.value || $parameter.activity_id }}',
 					},
 				},
 			},
@@ -67,18 +56,7 @@ export const activityDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'POST',
-						url: '=/activities/{{ $parameter.activity_id.value || $parameter.activity_id }}/complete',
-					},
-				},
-			},
-			{
-				name: 'Uncomplete',
-				value: 'uncomplete',
-				action: 'Mark an activity uncomplete',
-				routing: {
-					request: {
-						method: 'POST',
-						url: '=/activities/{{ $parameter.activity_id.value || $parameter.activity_id }}/uncomplete',
+						url: '=/v1/activities/{{ $parameter.activity_id.value || $parameter.activity_id }}/complete',
 					},
 				},
 			},
@@ -94,7 +72,7 @@ export const activityDescription: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['activity'],
-				operation: ['get', 'update', 'delete', 'complete', 'uncomplete'],
+				operation: ['get', 'update', 'complete'],
 			},
 		},
 	}),
@@ -111,7 +89,7 @@ export const activityDescription: INodeProperties[] = [
 	},
 	{
 		displayName: 'Activity Type Name or ID',
-		name: 'activity_type_id',
+		name: 'type_id',
 		type: 'options',
 		typeOptions: { loadOptionsMethod: 'loadActivityTypes' },
 		default: '',
@@ -119,8 +97,16 @@ export const activityDescription: INodeProperties[] = [
 		displayOptions: showFor(['create']),
 		description:
 			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-		routing: { send: { type: 'body', property: 'activity_type_id' } },
+		routing: { send: { type: 'body', property: 'type_id' } },
 	},
+	entityResourceLocator({
+		displayName: 'Owner Membership',
+		name: 'owner_membership_id',
+		required: true,
+		searchListMethod: 'searchMemberships',
+		urlPathSegment: 'memberships',
+		displayOptions: showFor(['create']),
+	}),
 	{
 		displayName: 'Related Type',
 		name: 'related_type',
@@ -155,12 +141,12 @@ export const activityDescription: INodeProperties[] = [
 		displayOptions: showFor(['create']),
 		options: [
 			{
-				displayName: 'Description',
-				name: 'description',
+				displayName: 'Notes',
+				name: 'notes',
 				type: 'string',
 				typeOptions: { rows: 3 },
 				default: '',
-				routing: { send: { type: 'body', property: 'description' } },
+				routing: { send: { type: 'body', property: 'notes' } },
 			},
 			{
 				displayName: 'Due At',
@@ -168,13 +154,6 @@ export const activityDescription: INodeProperties[] = [
 				type: 'dateTime',
 				default: '',
 				routing: { send: { type: 'body', property: 'due_at' } },
-			},
-			{
-				displayName: 'Owner Membership ID',
-				name: 'owner_membership_id',
-				type: 'string',
-				default: '',
-				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
 		],
 	},
@@ -191,10 +170,13 @@ export const activityDescription: INodeProperties[] = [
 		displayOptions: showFor(['list']),
 		options: [
 			{
-				displayName: 'Owner Membership ID',
+				displayName: 'Owner Membership Name or ID',
 				name: 'owner_membership_id',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadMemberships' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'query', property: 'owner_membership_id' } },
 			},
 			{
@@ -228,20 +210,6 @@ export const activityDescription: INodeProperties[] = [
 				],
 				routing: { send: { type: 'query', property: 'status' } },
 			},
-			{
-				displayName: 'Due After',
-				name: 'due_after',
-				type: 'dateTime',
-				default: '',
-				routing: { send: { type: 'query', property: 'due_after' } },
-			},
-			{
-				displayName: 'Due Before',
-				name: 'due_before',
-				type: 'dateTime',
-				default: '',
-				routing: { send: { type: 'query', property: 'due_before' } },
-			},
 		],
 	},
 
@@ -262,12 +230,12 @@ export const activityDescription: INodeProperties[] = [
 				routing: { send: { type: 'body', property: 'title' } },
 			},
 			{
-				displayName: 'Description',
-				name: 'description',
+				displayName: 'Notes',
+				name: 'notes',
 				type: 'string',
 				typeOptions: { rows: 3 },
 				default: '',
-				routing: { send: { type: 'body', property: 'description' } },
+				routing: { send: { type: 'body', property: 'notes' } },
 			},
 			{
 				displayName: 'Due At',
@@ -277,15 +245,14 @@ export const activityDescription: INodeProperties[] = [
 				routing: { send: { type: 'body', property: 'due_at' } },
 			},
 			{
-				displayName: 'Status',
-				name: 'status',
+				displayName: 'Owner Membership Name or ID',
+				name: 'owner_membership_id',
 				type: 'options',
-				default: 'pending',
-				options: [
-					{ name: 'Pending', value: 'pending' },
-					{ name: 'Done', value: 'done' },
-				],
-				routing: { send: { type: 'body', property: 'status' } },
+				typeOptions: { loadOptionsMethod: 'loadMemberships' },
+				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
 		],
 	},

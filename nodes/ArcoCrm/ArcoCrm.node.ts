@@ -9,9 +9,12 @@ import { dealDescription } from './descriptions/DealDescription';
 import { personDescription } from './descriptions/PersonDescription';
 import { organizationDescription } from './descriptions/OrganizationDescription';
 import { activityDescription } from './descriptions/ActivityDescription';
+import { activityTypeDescription } from './descriptions/ActivityTypeDescription';
 import { noteDescription } from './descriptions/NoteDescription';
 import { tagDescription } from './descriptions/TagDescription';
 import { pipelineDescription } from './descriptions/PipelineDescription';
+import { membershipDescription } from './descriptions/MembershipDescription';
+import { originDescription } from './descriptions/OriginDescription';
 
 import {
 	searchLeads,
@@ -22,12 +25,15 @@ import {
 	searchTags,
 	searchPipelines,
 	searchStages,
+	searchOrigins,
+	searchMemberships,
 } from './methods/listSearch';
 import {
 	loadPipelines,
 	loadActivityTypes,
 	loadOrigins,
 	loadTags,
+	loadMemberships,
 } from './methods/loadOptions';
 
 export class ArcoCrm implements INodeType {
@@ -60,10 +66,13 @@ export class ArcoCrm implements INodeType {
 				default: 'lead',
 				options: [
 					{ name: 'Activity', value: 'activity' },
+					{ name: 'Activity Type', value: 'activityType' },
 					{ name: 'Deal', value: 'deal' },
 					{ name: 'Lead', value: 'lead' },
+					{ name: 'Membership', value: 'membership' },
 					{ name: 'Note', value: 'note' },
 					{ name: 'Organization', value: 'organization' },
+					{ name: 'Origin', value: 'origin' },
 					{ name: 'Person', value: 'person' },
 					{ name: 'Pipeline', value: 'pipeline' },
 					{ name: 'Tag', value: 'tag' },
@@ -74,9 +83,12 @@ export class ArcoCrm implements INodeType {
 			...personDescription,
 			...organizationDescription,
 			...activityDescription,
+			...activityTypeDescription,
 			...noteDescription,
 			...tagDescription,
 			...pipelineDescription,
+			...membershipDescription,
+			...originDescription,
 		],
 	};
 
@@ -90,12 +102,15 @@ export class ArcoCrm implements INodeType {
 			searchTags,
 			searchPipelines,
 			searchStages,
+			searchOrigins,
+			searchMemberships,
 		},
 		loadOptions: {
 			loadPipelines,
 			loadActivityTypes,
 			loadOrigins,
 			loadTags,
+			loadMemberships,
 		},
 	};
 }

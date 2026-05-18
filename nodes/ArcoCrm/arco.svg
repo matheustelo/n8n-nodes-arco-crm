@@ -1,11 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0F172A"/>
-      <stop offset="100%" stop-color="#1E40AF"/>
-    </linearGradient>
-  </defs>
-  <rect width="160" height="160" rx="32" fill="url(#g)"/>
-  <path d="M40 116 L80 44 L120 116" stroke="#F8FAFC" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="80" cy="116" r="8" fill="#F8FAFC"/>
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="512.000000pt" height="512.000000pt" viewBox="0 0 512.000000 512.000000"
+ preserveAspectRatio="xMidYMid meet">
+
+<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M2377 4465 c-169 -32 -302 -91 -435 -192 -180 -137 -314 -335 -374
+-553 l-23 -85 0 -1075 c0 -1010 1 -1078 18 -1103 34 -53 68 -62 222 -62 114 0
+146 4 172 18 67 36 63 -28 63 1085 0 583 4 1030 9 1058 26 134 100 254 208
+335 157 119 370 140 550 54 129 -61 242 -190 283 -323 19 -62 20 -95 20 -1021
+0 -550 5 -987 10 -1030 11 -81 30 -123 73 -155 26 -19 42 -21 165 -21 156 0
+188 11 219 75 17 33 18 101 18 1090 l0 1055 -28 100 c-63 230 -201 429 -398
+576 -85 63 -231 131 -339 159 -113 28 -323 36 -433 15z"/>
+</g>
 </svg>

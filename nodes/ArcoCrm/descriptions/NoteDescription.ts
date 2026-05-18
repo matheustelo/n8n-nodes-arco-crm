@@ -25,31 +25,25 @@ export const noteDescription: INodeProperties[] = [
 				name: 'Create',
 				value: 'create',
 				action: 'Create a note',
-				routing: { request: { method: 'POST', url: '/notes' } },
+				routing: { request: { method: 'POST', url: '/v1/notes' } },
 			},
 			{
 				name: 'Get',
 				value: 'get',
 				action: 'Get a note',
-				routing: { request: { method: 'GET', url: '=/notes/{{ $parameter.note_id }}' } },
+				routing: { request: { method: 'GET', url: '=/v1/notes/{{ $parameter.note_id }}' } },
 			},
 			{
 				name: 'List',
 				value: 'list',
 				action: 'List notes for an entity',
-				routing: { request: { method: 'GET', url: '/notes' } },
+				routing: { request: { method: 'GET', url: '/v1/notes' } },
 			},
 			{
 				name: 'Update',
 				value: 'update',
 				action: 'Update a note',
-				routing: { request: { method: 'PATCH', url: '=/notes/{{ $parameter.note_id }}' } },
-			},
-			{
-				name: 'Delete',
-				value: 'delete',
-				action: 'Delete a note',
-				routing: { request: { method: 'DELETE', url: '=/notes/{{ $parameter.note_id }}' } },
+				routing: { request: { method: 'PATCH', url: '=/v1/notes/{{ $parameter.note_id }}' } },
 			},
 		],
 	},
@@ -60,19 +54,19 @@ export const noteDescription: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: showFor(['get', 'update', 'delete']),
+		displayOptions: showFor(['get', 'update']),
 	},
 
 	// ── Create body ──────────────────────────────────────────────────────────
 	{
-		displayName: 'Body',
-		name: 'body',
+		displayName: 'Content',
+		name: 'content',
 		type: 'string',
 		typeOptions: { rows: 4 },
 		default: '',
 		required: true,
 		displayOptions: showFor(['create']),
-		routing: { send: { type: 'body', property: 'body' } },
+		routing: { send: { type: 'body', property: 'content' } },
 	},
 	{
 		displayName: 'Entity Type',
@@ -95,7 +89,7 @@ export const noteDescription: INodeProperties[] = [
 		routing: { send: { type: 'body', property: 'entity_id' } },
 	},
 
-	// ── List filters (sent as query) ─────────────────────────────────────────
+	// ── List filters (sent as query, required by API) ────────────────────────
 	{
 		displayName: 'Entity Type',
 		name: 'entity_type_filter',
@@ -121,13 +115,13 @@ export const noteDescription: INodeProperties[] = [
 
 	// ── Update ────────────────────────────────────────────────────────────────
 	{
-		displayName: 'Body',
-		name: 'updateBody',
+		displayName: 'Content',
+		name: 'updateContent',
 		type: 'string',
 		typeOptions: { rows: 4 },
 		default: '',
 		required: true,
 		displayOptions: showFor(['update']),
-		routing: { send: { type: 'body', property: 'body' } },
+		routing: { send: { type: 'body', property: 'content' } },
 	},
 ];

@@ -60,24 +60,22 @@ export const dealDescription: INodeProperties[] = [
 
 	// ── Create ────────────────────────────────────────────────────────────────
 	{
-		displayName: 'Name',
-		name: 'name',
+		displayName: 'Title',
+		name: 'title',
 		type: 'string',
 		default: '',
 		required: true,
 		displayOptions: showFor(['create']),
-		routing: { send: { type: 'body', property: 'name' } },
+		routing: { send: { type: 'body', property: 'title' } },
 	},
 	{
-		displayName: 'Pipeline Name or ID',
+		displayName: 'Pipeline ID',
 		name: 'pipeline_id',
-		type: 'options',
-		typeOptions: { loadOptionsMethod: 'loadPipelines' },
+		type: 'string',
 		default: '',
 		required: true,
 		displayOptions: showFor(['create']),
-		description:
-			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		description: 'UUID of the deal pipeline. Deal pipelines are not exposed by the Public API — copy the ID from the CRM URL.',
 		routing: { send: { type: 'body', property: 'pipeline_id' } },
 	},
 	{
@@ -134,10 +132,13 @@ export const dealDescription: INodeProperties[] = [
 				routing: { send: { type: 'body', property: 'expected_close_date' } },
 			},
 			{
-				displayName: 'Owner Membership ID',
+				displayName: 'Owner Membership Name or ID',
 				name: 'owner_membership_id',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadMemberships' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
 			{
@@ -188,10 +189,13 @@ export const dealDescription: INodeProperties[] = [
 				routing: { send: { type: 'query', property: 'status' } },
 			},
 			{
-				displayName: 'Owner Membership ID',
+				displayName: 'Owner Membership Name or ID',
 				name: 'owner_membership_id',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadMemberships' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'query', property: 'owner_membership_id' } },
 			},
 			{
@@ -221,11 +225,11 @@ export const dealDescription: INodeProperties[] = [
 		displayOptions: showFor(['update']),
 		options: [
 			{
-				displayName: 'Name',
-				name: 'name',
+				displayName: 'Title',
+				name: 'title',
 				type: 'string',
 				default: '',
-				routing: { send: { type: 'body', property: 'name' } },
+				routing: { send: { type: 'body', property: 'title' } },
 			},
 			{
 				displayName: 'Value',
@@ -249,10 +253,13 @@ export const dealDescription: INodeProperties[] = [
 				routing: { send: { type: 'body', property: 'expected_close_date' } },
 			},
 			{
-				displayName: 'Owner Membership ID',
+				displayName: 'Owner Membership Name or ID',
 				name: 'owner_membership_id',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadMemberships' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
 			{
