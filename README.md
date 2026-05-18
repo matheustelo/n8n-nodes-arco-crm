@@ -68,7 +68,7 @@ pnpm build
 
 ## Changelog
 
-### 0.1.1
+### 0.1.2
 
 Alinhamento à Public API v1.4.9.3.
 
