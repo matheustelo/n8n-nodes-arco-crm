@@ -1,6 +1,7 @@
 {
 	"name": "n8n-nodes-arco-crm",
 	"version": "0.1.1",
+	"packageManager": "pnpm@8.15.0",
 	"description": "n8n community node for Arco CRM (Public API)",
 	"license": "MIT",
 	"homepage": "https://github.com/matheustelo/n8n-nodes-arco-crm",
