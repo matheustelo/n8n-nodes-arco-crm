@@ -6,6 +6,80 @@ const showFor = (operation: string[]): INodeProperties['displayOptions'] => ({
 	show: { resource: ['lead'], operation },
 });
 
+const trafficTrackingField: INodeProperties = {
+	displayName: 'Traffic Tracking',
+	name: 'traffic_tracking',
+	type: 'collection',
+	placeholder: 'Add tracking field',
+	default: {},
+	description: 'UTMs, click IDs and referrer info for paid/organic traffic attribution',
+	options: [
+		{
+			displayName: 'UTM Source',
+			name: 'utm_source',
+			type: 'string',
+			default: '',
+			routing: { send: { type: 'body', property: 'utm_source' } },
+		},
+		{
+			displayName: 'UTM Medium',
+			name: 'utm_medium',
+			type: 'string',
+			default: '',
+			routing: { send: { type: 'body', property: 'utm_medium' } },
+		},
+		{
+			displayName: 'UTM Campaign',
+			name: 'utm_campaign',
+			type: 'string',
+			default: '',
+			routing: { send: { type: 'body', property: 'utm_campaign' } },
+		},
+		{
+			displayName: 'UTM Term',
+			name: 'utm_term',
+			type: 'string',
+			default: '',
+			routing: { send: { type: 'body', property: 'utm_term' } },
+		},
+		{
+			displayName: 'UTM Content',
+			name: 'utm_content',
+			type: 'string',
+			default: '',
+			routing: { send: { type: 'body', property: 'utm_content' } },
+		},
+		{
+			displayName: 'Google Click ID (Gclid)',
+			name: 'gclid',
+			type: 'string',
+			default: '',
+			routing: { send: { type: 'body', property: 'gclid' } },
+		},
+		{
+			displayName: 'Facebook Click ID (Fbclid)',
+			name: 'fbclid',
+			type: 'string',
+			default: '',
+			routing: { send: { type: 'body', property: 'fbclid' } },
+		},
+		{
+			displayName: 'Landing Page',
+			name: 'landing_page',
+			type: 'string',
+			default: '',
+			routing: { send: { type: 'body', property: 'landing_page' } },
+		},
+		{
+			displayName: 'Referrer',
+			name: 'referrer',
+			type: 'string',
+			default: '',
+			routing: { send: { type: 'body', property: 'referrer' } },
+		},
+	],
+};
+
 export const leadDescription: INodeProperties[] = [
 	{
 		displayName: 'Operation',
@@ -235,34 +309,7 @@ export const leadDescription: INodeProperties[] = [
 					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
-			{
-				displayName: 'UTM Source',
-				name: 'utm_source',
-				type: 'string',
-				default: '',
-				routing: { send: { type: 'body', property: 'utm_source' } },
-			},
-			{
-				displayName: 'UTM Medium',
-				name: 'utm_medium',
-				type: 'string',
-				default: '',
-				routing: { send: { type: 'body', property: 'utm_medium' } },
-			},
-			{
-				displayName: 'UTM Campaign',
-				name: 'utm_campaign',
-				type: 'string',
-				default: '',
-				routing: { send: { type: 'body', property: 'utm_campaign' } },
-			},
-			{
-				displayName: 'Landing Page',
-				name: 'landing_page',
-				type: 'string',
-				default: '',
-				routing: { send: { type: 'body', property: 'landing_page' } },
-			},
+			trafficTrackingField,
 			{
 				displayName: 'Custom Data (JSON)',
 				name: 'custom_data',
@@ -410,6 +457,7 @@ export const leadDescription: INodeProperties[] = [
 					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
+			trafficTrackingField,
 			{
 				displayName: 'Custom Data (JSON)',
 				name: 'custom_data',
