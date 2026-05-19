@@ -19,9 +19,15 @@ function isScopeDenied(error: unknown): boolean {
 	return err.cause?.error?.code === 'SCOPE_DENIED';
 }
 
+async function resolveBaseUrl(context: ILoadOptionsFunctions): Promise<string> {
+	const creds = await context.getCredentials('arcoCrmApi');
+	const raw = (creds?.baseUrl as string | undefined) ?? 'https://crm.grupoarco.cc/api';
+	return raw.replace(/\/+$/, '');
+}
+
 async function paginatedSearch<T>(
 	context: ILoadOptionsFunctions,
-	url: string,
+	path: string,
 	filter: string | undefined,
 	paginationToken: string | undefined,
 	toItem: (record: T) => INodeListSearchItems,
@@ -33,10 +39,11 @@ async function paginatedSearch<T>(
 
 	let response: ListEnvelope<T>;
 	try {
+		const baseUrl = await resolveBaseUrl(context);
 		response = (await context.helpers.httpRequestWithAuthentication.call(
 			context,
 			'arcoCrmApi',
-			{ method: 'GET', url, qs, json: true },
+			{ method: 'GET', url: `${baseUrl}${path}`, qs, json: true },
 		)) as ListEnvelope<T>;
 	} catch (error) {
 		if (isScopeDenied(error)) return { results: [] };
@@ -219,13 +226,14 @@ export async function searchLossReasons(
 
 async function fetchPipelineStages(
 	context: ILoadOptionsFunctions,
-	url: string,
+	path: string,
 	pipelineId: string,
 ): Promise<Array<{ id: string; name: string }>> {
 	try {
+		const baseUrl = await resolveBaseUrl(context);
 		const response = (await context.helpers.httpRequestWithAuthentication.call(context, 'arcoCrmApi', {
 			method: 'GET',
-			url,
+			url: `${baseUrl}${path}`,
 			qs: { include_stages: true, limit: 100 },
 			json: true,
 		})) as ListEnvelope<PipelineRecord>;

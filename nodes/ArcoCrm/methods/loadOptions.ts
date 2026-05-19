@@ -15,15 +15,22 @@ function isScopeDenied(error: unknown): boolean {
 	return err.cause?.error?.code === 'SCOPE_DENIED';
 }
 
+async function resolveBaseUrl(context: ILoadOptionsFunctions): Promise<string> {
+	const creds = await context.getCredentials('arcoCrmApi');
+	const raw = (creds?.baseUrl as string | undefined) ?? 'https://crm.grupoarco.cc/api';
+	return raw.replace(/\/+$/, '');
+}
+
 async function fetchList<T>(
 	context: ILoadOptionsFunctions,
-	url: string,
+	path: string,
 	qs: IDataObject = {},
 ): Promise<T[]> {
 	try {
+		const baseUrl = await resolveBaseUrl(context);
 		const response = (await context.helpers.httpRequestWithAuthentication.call(context, 'arcoCrmApi', {
 			method: 'GET',
-			url,
+			url: `${baseUrl}${path}`,
 			qs: { limit: 100, ...qs },
 			json: true,
 		})) as ListEnvelope<T>;
