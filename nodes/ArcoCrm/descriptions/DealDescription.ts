@@ -46,6 +46,105 @@ export const dealDescription: INodeProperties[] = [
 					},
 				},
 			},
+			{
+				name: 'Change Stage',
+				value: 'changeStage',
+				action: 'Change a deals stage',
+				routing: {
+					request: {
+						method: 'POST',
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/change-stage',
+					},
+				},
+			},
+			{
+				name: 'Mark Won',
+				value: 'markWon',
+				action: 'Mark a deal as won',
+				routing: {
+					request: {
+						method: 'POST',
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/mark-won',
+					},
+				},
+			},
+			{
+				name: 'Mark Lost',
+				value: 'markLost',
+				action: 'Mark a deal as lost',
+				routing: {
+					request: {
+						method: 'POST',
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/mark-lost',
+					},
+				},
+			},
+			{
+				name: 'Reopen',
+				value: 'reopen',
+				action: 'Reopen a closed deal',
+				routing: {
+					request: {
+						method: 'POST',
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/reopen',
+					},
+				},
+			},
+			{
+				name: 'Claim',
+				value: 'claim',
+				action: 'Claim a deal',
+				routing: {
+					request: {
+						method: 'POST',
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/claim',
+					},
+				},
+			},
+			{
+				name: 'Get Stage History',
+				value: 'stageHistory',
+				action: 'Get a deals stage history',
+				routing: {
+					request: {
+						method: 'GET',
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/stage-history',
+					},
+				},
+			},
+			{
+				name: 'List Tags',
+				value: 'listTags',
+				action: 'List a deals tags',
+				routing: {
+					request: {
+						method: 'GET',
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/tags',
+					},
+				},
+			},
+			{
+				name: 'Add Tags',
+				value: 'addTags',
+				action: 'Add tags to a deal',
+				routing: {
+					request: {
+						method: 'POST',
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/tags',
+					},
+				},
+			},
+			{
+				name: 'Remove Tags',
+				value: 'removeTags',
+				action: 'Remove tags from a deal',
+				routing: {
+					request: {
+						method: 'DELETE',
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/tags',
+					},
+				},
+			},
 		],
 	},
 
@@ -55,7 +154,24 @@ export const dealDescription: INodeProperties[] = [
 		required: true,
 		searchListMethod: 'searchDeals',
 		urlPathSegment: 'deals',
-		displayOptions: { show: { resource: ['deal'], operation: ['get', 'update'] } },
+		displayOptions: {
+			show: {
+				resource: ['deal'],
+				operation: [
+					'get',
+					'update',
+					'changeStage',
+					'markWon',
+					'markLost',
+					'reopen',
+					'claim',
+					'stageHistory',
+					'listTags',
+					'addTags',
+					'removeTags',
+				],
+			},
+		},
 	}),
 
 	// ── Create ────────────────────────────────────────────────────────────────
@@ -69,24 +185,31 @@ export const dealDescription: INodeProperties[] = [
 		routing: { send: { type: 'body', property: 'title' } },
 	},
 	{
-		displayName: 'Pipeline ID',
-		name: 'pipeline_id',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(['create']),
-		description: 'UUID of the deal pipeline. Deal pipelines are not exposed by the Public API — copy the ID from the CRM URL.',
-		routing: { send: { type: 'body', property: 'pipeline_id' } },
+		...entityResourceLocator({
+			displayName: 'Pipeline',
+			name: 'pipeline_id',
+			required: true,
+			searchListMethod: 'searchDealPipelines',
+			urlPathSegment: 'deal-pipelines',
+			displayOptions: showFor(['create']),
+		}),
+		routing: {
+			send: { type: 'body', property: 'pipeline_id', value: '={{ $value.value || $value }}' },
+		},
 	},
 	{
-		displayName: 'Stage ID',
-		name: 'stage_id',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(['create']),
-		description: 'UUID of the stage within the selected pipeline',
-		routing: { send: { type: 'body', property: 'stage_id' } },
+		...entityResourceLocator({
+			displayName: 'Stage',
+			name: 'stage_id',
+			required: true,
+			searchListMethod: 'searchDealStages',
+			urlPathSegment: 'deal-stages',
+			description: 'Pick the pipeline first to load its stages',
+			displayOptions: showFor(['create']),
+		}),
+		routing: {
+			send: { type: 'body', property: 'stage_id', value: '={{ $value.value || $value }}' },
+		},
 	},
 	{
 		displayName: 'Additional Fields',
@@ -163,18 +286,27 @@ export const dealDescription: INodeProperties[] = [
 		displayOptions: showFor(['list']),
 		options: [
 			{
-				displayName: 'Pipeline ID',
-				name: 'pipeline_id',
-				type: 'string',
-				default: '',
-				routing: { send: { type: 'query', property: 'pipeline_id' } },
+				...entityResourceLocator({
+					displayName: 'Pipeline',
+					name: 'pipeline_id',
+					searchListMethod: 'searchDealPipelines',
+					urlPathSegment: 'deal-pipelines',
+				}),
+				routing: {
+					send: { type: 'query', property: 'pipeline_id', value: '={{ $value.value || $value }}' },
+				},
 			},
 			{
-				displayName: 'Stage ID',
-				name: 'stage_id',
-				type: 'string',
-				default: '',
-				routing: { send: { type: 'query', property: 'stage_id' } },
+				...entityResourceLocator({
+					displayName: 'Stage',
+					name: 'stage_id',
+					searchListMethod: 'searchDealStages',
+					urlPathSegment: 'deal-stages',
+					description: 'Pick the pipeline first to load its stages',
+				}),
+				routing: {
+					send: { type: 'query', property: 'stage_id', value: '={{ $value.value || $value }}' },
+				},
 			},
 			{
 				displayName: 'Status',
@@ -206,10 +338,13 @@ export const dealDescription: INodeProperties[] = [
 				routing: { send: { type: 'query', property: 'unassigned' } },
 			},
 			{
-				displayName: 'Origin ID',
+				displayName: 'Origin Name or ID',
 				name: 'origin_id',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadOrigins' },
 				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'query', property: 'origin_id' } },
 			},
 		],
@@ -270,5 +405,95 @@ export const dealDescription: INodeProperties[] = [
 				routing: { send: { type: 'body', property: 'custom_data' } },
 			},
 		],
+	},
+
+	// ── Change Stage ──────────────────────────────────────────────────────────
+	{
+		...entityResourceLocator({
+			displayName: 'Stage',
+			name: 'stage_id',
+			required: true,
+			searchListMethod: 'searchDealStages',
+			urlPathSegment: 'deal-stages',
+			description: 'Pick the deal pipeline first (see "Deal Pipeline" below) to load its stages',
+			displayOptions: showFor(['changeStage']),
+		}),
+		routing: {
+			send: { type: 'body', property: 'stage_id', value: '={{ $value.value || $value }}' },
+		},
+	},
+	{
+		...entityResourceLocator({
+			displayName: 'Deal Pipeline',
+			name: 'pipeline_id',
+			required: false,
+			searchListMethod: 'searchDealPipelines',
+			urlPathSegment: 'deal-pipelines',
+			description: 'Used only to populate the Stage dropdown — not sent to the API',
+			displayOptions: showFor(['changeStage']),
+		}),
+	},
+
+	// ── Mark Won ──────────────────────────────────────────────────────────────
+	{
+		displayName: 'Won Options',
+		name: 'wonOptions',
+		type: 'collection',
+		placeholder: 'Add field',
+		default: {},
+		displayOptions: showFor(['markWon']),
+		options: [
+			{
+				displayName: 'Reason (Free Text)',
+				name: 'reason_won',
+				type: 'string',
+				default: '',
+				routing: { send: { type: 'body', property: 'reason_won' } },
+			},
+		],
+	},
+
+	// ── Mark Lost ─────────────────────────────────────────────────────────────
+	{
+		displayName: 'Lost Options',
+		name: 'lostOptions',
+		type: 'collection',
+		placeholder: 'Add field',
+		default: {},
+		displayOptions: showFor(['markLost']),
+		options: [
+			{
+				...entityResourceLocator({
+					displayName: 'Loss Reason',
+					name: 'loss_reason_id',
+					searchListMethod: 'searchLossReasons',
+					urlPathSegment: 'loss-reasons',
+				}),
+				routing: {
+					send: { type: 'body', property: 'loss_reason_id', value: '={{ $value.value || $value }}' },
+				},
+			},
+			{
+				displayName: 'Reason (Free Text)',
+				name: 'reason_lost',
+				type: 'string',
+				default: '',
+				routing: { send: { type: 'body', property: 'reason_lost' } },
+			},
+		],
+	},
+
+	// ── Add / Remove Tags ─────────────────────────────────────────────────────
+	{
+		displayName: 'Tag Names or IDs',
+		name: 'tag_ids',
+		type: 'multiOptions',
+		typeOptions: { loadOptionsMethod: 'loadTags' },
+		default: [],
+		required: true,
+		displayOptions: showFor(['addTags', 'removeTags']),
+		description:
+			'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		routing: { send: { type: 'body', property: 'tag_ids' } },
 	},
 ];

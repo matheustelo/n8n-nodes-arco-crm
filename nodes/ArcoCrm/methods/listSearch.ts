@@ -1,8 +1,10 @@
+import { NodeApiError } from 'n8n-workflow';
 import type {
 	IDataObject,
 	ILoadOptionsFunctions,
 	INodeListSearchItems,
 	INodeListSearchResult,
+	JsonObject,
 } from 'n8n-workflow';
 
 type ListEnvelope<T> = {
@@ -10,23 +12,36 @@ type ListEnvelope<T> = {
 	meta?: { next_cursor?: string | null; has_more?: boolean; limit?: number };
 };
 
+function isScopeDenied(error: unknown): boolean {
+	const err = error as { httpCode?: string | number; cause?: { error?: { code?: string } } } | undefined;
+	if (!err) return false;
+	if (String(err.httpCode) === '403') return true;
+	return err.cause?.error?.code === 'SCOPE_DENIED';
+}
+
 async function paginatedSearch<T>(
 	context: ILoadOptionsFunctions,
 	url: string,
 	filter: string | undefined,
 	paginationToken: string | undefined,
 	toItem: (record: T) => INodeListSearchItems,
-	supportsServerSearch = true,
+	supportsServerSearch = false,
 ): Promise<INodeListSearchResult> {
 	const qs: IDataObject = { limit: 50 };
 	if (paginationToken) qs.cursor = paginationToken;
 	if (supportsServerSearch && filter) qs.search = filter;
 
-	const response = (await context.helpers.httpRequestWithAuthentication.call(
-		context,
-		'arcoCrmApi',
-		{ method: 'GET', url, qs, json: true },
-	)) as ListEnvelope<T>;
+	let response: ListEnvelope<T>;
+	try {
+		response = (await context.helpers.httpRequestWithAuthentication.call(
+			context,
+			'arcoCrmApi',
+			{ method: 'GET', url, qs, json: true },
+		)) as ListEnvelope<T>;
+	} catch (error) {
+		if (isScopeDenied(error)) return { results: [] };
+		throw new NodeApiError(context.getNode(), error as JsonObject);
+	}
 
 	const records = Array.isArray(response?.data) ? response.data : [];
 	const filtered =
@@ -52,6 +67,7 @@ type TagRecord = { id: string; name: string };
 type PipelineRecord = { id: string; name: string; stages?: Array<{ id: string; name: string }> };
 type OriginRecord = { id: string; name: string };
 type MembershipRecord = { id: string; full_name: string; email?: string };
+type LossReasonRecord = { id: string; name: string };
 
 export async function searchLeads(
 	this: ILoadOptionsFunctions,
@@ -111,7 +127,6 @@ export async function searchActivities(
 		filter,
 		paginationToken,
 		(activity) => ({ name: activity.title, value: activity.id }),
-		false,
 	);
 }
 
@@ -126,11 +141,10 @@ export async function searchTags(
 		filter,
 		paginationToken,
 		(tag) => ({ name: tag.name, value: tag.id }),
-		false,
 	);
 }
 
-export async function searchPipelines(
+export async function searchLeadPipelines(
 	this: ILoadOptionsFunctions,
 	filter?: string,
 	paginationToken?: string,
@@ -141,7 +155,20 @@ export async function searchPipelines(
 		filter,
 		paginationToken,
 		(pipeline) => ({ name: pipeline.name, value: pipeline.id }),
-		false,
+	);
+}
+
+export async function searchDealPipelines(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+	paginationToken?: string,
+): Promise<INodeListSearchResult> {
+	return paginatedSearch<PipelineRecord>(
+		this,
+		'/v1/deal-pipelines',
+		filter,
+		paginationToken,
+		(pipeline) => ({ name: pipeline.name, value: pipeline.id }),
 	);
 }
 
@@ -156,7 +183,6 @@ export async function searchOrigins(
 		filter,
 		paginationToken,
 		(origin) => ({ name: origin.name, value: origin.id }),
-		false,
 	);
 }
 
@@ -174,33 +200,77 @@ export async function searchMemberships(
 			name: member.email ? `${member.full_name} (${member.email})` : member.full_name,
 			value: member.id,
 		}),
-		false,
 	);
 }
 
-export async function searchStages(
+export async function searchLossReasons(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+	paginationToken?: string,
+): Promise<INodeListSearchResult> {
+	return paginatedSearch<LossReasonRecord>(
+		this,
+		'/v1/loss-reasons',
+		filter,
+		paginationToken,
+		(reason) => ({ name: reason.name, value: reason.id }),
+	);
+}
+
+async function fetchPipelineStages(
+	context: ILoadOptionsFunctions,
+	url: string,
+	pipelineId: string,
+): Promise<Array<{ id: string; name: string }>> {
+	try {
+		const response = (await context.helpers.httpRequestWithAuthentication.call(context, 'arcoCrmApi', {
+			method: 'GET',
+			url,
+			qs: { include_stages: true, limit: 100 },
+			json: true,
+		})) as ListEnvelope<PipelineRecord>;
+		const pipeline = (response?.data ?? []).find((p) => p.id === pipelineId);
+		return pipeline?.stages ?? [];
+	} catch (error) {
+		if (isScopeDenied(error)) return [];
+		throw new NodeApiError(context.getNode(), error as JsonObject);
+	}
+}
+
+function readPipelineParam(context: ILoadOptionsFunctions, names: string[]): string | undefined {
+	for (const name of names) {
+		try {
+			const value = context.getCurrentNodeParameter(name, { extractValue: true });
+			if (typeof value === 'string' && value) return value;
+		} catch {
+			/* parameter not present on this form — try the next one */
+		}
+	}
+	return undefined;
+}
+
+export async function searchLeadStages(
 	this: ILoadOptionsFunctions,
 	filter?: string,
 ): Promise<INodeListSearchResult> {
-	const pipelineParam = this.getCurrentNodeParameter('pipeline_id', { extractValue: true }) as
-		| string
-		| undefined;
-	if (!pipelineParam) return { results: [] };
-
-	const response = (await this.helpers.httpRequestWithAuthentication.call(this, 'arcoCrmApi', {
-		method: 'GET',
-		url: '/v1/lead-pipelines',
-		qs: { include_stages: true, limit: 100 },
-		json: true,
-	})) as ListEnvelope<PipelineRecord>;
-
-	const pipeline = (response?.data ?? []).find((p) => p.id === pipelineParam);
-	const stages = pipeline?.stages ?? [];
+	const pipelineId = readPipelineParam(this, ['lead_pipeline_id']);
+	if (!pipelineId) return { results: [] };
+	const stages = await fetchPipelineStages(this, '/v1/lead-pipelines', pipelineId);
 	const filtered = filter
 		? stages.filter((stage) => stage.name.toLowerCase().includes(filter.toLowerCase()))
 		: stages;
+	return { results: filtered.map((stage) => ({ name: stage.name, value: stage.id })) };
+}
 
-	return {
-		results: filtered.map((stage) => ({ name: stage.name, value: stage.id })),
-	};
+export async function searchDealStages(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+): Promise<INodeListSearchResult> {
+	const pipelineId = readPipelineParam(this, ['pipeline_id', 'deal_pipeline_id']);
+	if (!pipelineId) return { results: [] };
+	const stages = await fetchPipelineStages(this, '/v1/deal-pipelines', pipelineId);
+	const filtered = filter
+		? stages.filter((stage) => stage.name.toLowerCase().includes(filter.toLowerCase()))
+		: stages;
+	return { results: filtered.map((stage) => ({ name: stage.name, value: stage.id })) };
 }

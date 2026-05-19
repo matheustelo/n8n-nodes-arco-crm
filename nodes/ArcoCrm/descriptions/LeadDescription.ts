@@ -297,11 +297,27 @@ export const leadDescription: INodeProperties[] = [
 				routing: { send: { type: 'query', property: 'status' } },
 			},
 			{
-				displayName: 'Lead Pipeline ID',
-				name: 'lead_pipeline_id',
-				type: 'string',
-				default: '',
-				routing: { send: { type: 'query', property: 'lead_pipeline_id' } },
+				...entityResourceLocator({
+					displayName: 'Lead Pipeline',
+					name: 'lead_pipeline_id',
+					searchListMethod: 'searchLeadPipelines',
+					urlPathSegment: 'lead-pipelines',
+				}),
+				routing: {
+					send: { type: 'query', property: 'lead_pipeline_id', value: '={{ $value.value || $value }}' },
+				},
+			},
+			{
+				...entityResourceLocator({
+					displayName: 'Lead Stage',
+					name: 'lead_stage_id',
+					searchListMethod: 'searchLeadStages',
+					urlPathSegment: 'lead-stages',
+					description: 'Pick the pipeline first to load its stages',
+				}),
+				routing: {
+					send: { type: 'query', property: 'lead_stage_id', value: '={{ $value.value || $value }}' },
+				},
 			},
 			{
 				displayName: 'Origin Name or ID',
@@ -420,11 +436,19 @@ export const leadDescription: INodeProperties[] = [
 		displayOptions: showFor(['disqualify']),
 		options: [
 			{
-				displayName: 'Disqualification Reason ID',
-				name: 'disqualification_reason_id',
-				type: 'string',
-				default: '',
-				routing: { send: { type: 'body', property: 'disqualification_reason_id' } },
+				...entityResourceLocator({
+					displayName: 'Disqualification Reason',
+					name: 'disqualification_reason_id',
+					searchListMethod: 'searchLossReasons',
+					urlPathSegment: 'loss-reasons',
+				}),
+				routing: {
+					send: {
+						type: 'body',
+						property: 'disqualification_reason_id',
+						value: '={{ $value.value || $value }}',
+					},
+				},
 			},
 			{
 				displayName: 'Comment',
@@ -497,22 +521,31 @@ export const leadDescription: INodeProperties[] = [
 		routing: { send: { type: 'body', property: 'deal_action' } },
 	},
 	{
-		displayName: 'Deal Pipeline ID',
-		name: 'deal_pipeline_id',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: { show: { resource: ['lead'], operation: ['convert'], deal_action: ['create'] } },
-		routing: { send: { type: 'body', property: 'deal_pipeline_id' } },
+		...entityResourceLocator({
+			displayName: 'Deal Pipeline',
+			name: 'deal_pipeline_id',
+			required: true,
+			searchListMethod: 'searchDealPipelines',
+			urlPathSegment: 'deal-pipelines',
+			displayOptions: { show: { resource: ['lead'], operation: ['convert'], deal_action: ['create'] } },
+		}),
+		routing: {
+			send: { type: 'body', property: 'deal_pipeline_id', value: '={{ $value.value || $value }}' },
+		},
 	},
 	{
-		displayName: 'Deal Stage ID',
-		name: 'deal_stage_id',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: { show: { resource: ['lead'], operation: ['convert'], deal_action: ['create'] } },
-		routing: { send: { type: 'body', property: 'deal_stage_id' } },
+		...entityResourceLocator({
+			displayName: 'Deal Stage',
+			name: 'deal_stage_id',
+			required: true,
+			searchListMethod: 'searchDealStages',
+			urlPathSegment: 'deal-stages',
+			description: 'Pick the deal pipeline first to load its stages',
+			displayOptions: { show: { resource: ['lead'], operation: ['convert'], deal_action: ['create'] } },
+		}),
+		routing: {
+			send: { type: 'body', property: 'deal_stage_id', value: '={{ $value.value || $value }}' },
+		},
 	},
 	{
 		displayName: 'Deal Options',
