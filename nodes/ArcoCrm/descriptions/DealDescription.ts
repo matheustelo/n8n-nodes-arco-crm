@@ -269,7 +269,13 @@ export const dealDescription: INodeProperties[] = [
 				name: 'custom_data',
 				type: 'json',
 				default: '{}',
-				routing: { send: { type: 'body', property: 'custom_data' } },
+				routing: {
+					send: {
+						type: 'body',
+						property: 'custom_data',
+						value: '={{ typeof $value === "string" ? JSON.parse($value || "{}") : $value }}',
+					},
+				},
 			},
 		],
 	},
@@ -402,7 +408,13 @@ export const dealDescription: INodeProperties[] = [
 				name: 'custom_data',
 				type: 'json',
 				default: '{}',
-				routing: { send: { type: 'body', property: 'custom_data' } },
+				routing: {
+					send: {
+						type: 'body',
+						property: 'custom_data',
+						value: '={{ typeof $value === "string" ? JSON.parse($value || "{}") : $value }}',
+					},
+				},
 			},
 		],
 	},

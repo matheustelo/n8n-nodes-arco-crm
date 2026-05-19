@@ -268,7 +268,13 @@ export const leadDescription: INodeProperties[] = [
 				name: 'custom_data',
 				type: 'json',
 				default: '{}',
-				routing: { send: { type: 'body', property: 'custom_data' } },
+				routing: {
+					send: {
+						type: 'body',
+						property: 'custom_data',
+						value: '={{ typeof $value === "string" ? JSON.parse($value || "{}") : $value }}',
+					},
+				},
 			},
 		],
 	},
@@ -409,21 +415,42 @@ export const leadDescription: INodeProperties[] = [
 				name: 'custom_data',
 				type: 'json',
 				default: '{}',
-				routing: { send: { type: 'body', property: 'custom_data' } },
+				routing: {
+					send: {
+						type: 'body',
+						property: 'custom_data',
+						value: '={{ typeof $value === "string" ? JSON.parse($value || "{}") : $value }}',
+					},
+				},
 			},
 		],
 	},
 
 	// ── Change Stage ──────────────────────────────────────────────────────────
 	{
-		displayName: 'Lead Stage ID',
-		name: 'lead_stage_id',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(['changeStage']),
-		description: 'UUID of the destination lead stage',
-		routing: { send: { type: 'body', property: 'lead_stage_id' } },
+		...entityResourceLocator({
+			displayName: 'Lead Stage',
+			name: 'lead_stage_id',
+			required: true,
+			searchListMethod: 'searchLeadStages',
+			urlPathSegment: 'lead-stages',
+			description: 'Pick the lead pipeline first (see "Lead Pipeline" below) to load its stages',
+			displayOptions: showFor(['changeStage']),
+		}),
+		routing: {
+			send: { type: 'body', property: 'lead_stage_id', value: '={{ $value.value || $value }}' },
+		},
+	},
+	{
+		...entityResourceLocator({
+			displayName: 'Lead Pipeline',
+			name: 'lead_pipeline_id',
+			required: false,
+			searchListMethod: 'searchLeadPipelines',
+			urlPathSegment: 'lead-pipelines',
+			description: 'Used only to populate the Stage dropdown — not sent to the API',
+			displayOptions: showFor(['changeStage']),
+		}),
 	},
 
 	// ── Disqualify ────────────────────────────────────────────────────────────
