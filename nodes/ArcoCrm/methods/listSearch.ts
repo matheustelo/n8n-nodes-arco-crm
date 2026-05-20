@@ -31,9 +31,10 @@ async function paginatedSearch<T>(
 	filter: string | undefined,
 	paginationToken: string | undefined,
 	toItem: (record: T) => INodeListSearchItems,
-	supportsServerSearch = false,
+	options: { supportsServerSearch?: boolean; extraQs?: IDataObject } = {},
 ): Promise<INodeListSearchResult> {
-	const qs: IDataObject = { limit: 50 };
+	const { supportsServerSearch = false, extraQs = {} } = options;
+	const qs: IDataObject = { limit: 50, ...extraQs };
 	if (paginationToken) qs.cursor = paginationToken;
 	if (supportsServerSearch && filter) qs.search = filter;
 
@@ -210,18 +211,36 @@ export async function searchMemberships(
 	);
 }
 
-export async function searchLossReasons(
-	this: ILoadOptionsFunctions,
-	filter?: string,
-	paginationToken?: string,
+async function paginatedLossReasons(
+	context: ILoadOptionsFunctions,
+	filter: string | undefined,
+	paginationToken: string | undefined,
+	scope: 'lead' | 'deal',
 ): Promise<INodeListSearchResult> {
 	return paginatedSearch<LossReasonRecord>(
-		this,
+		context,
 		'/v1/loss-reasons',
 		filter,
 		paginationToken,
 		(reason) => ({ name: reason.name, value: reason.id }),
+		{ extraQs: { scope } },
 	);
+}
+
+export async function searchLeadLossReasons(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+	paginationToken?: string,
+): Promise<INodeListSearchResult> {
+	return paginatedLossReasons(this, filter, paginationToken, 'lead');
+}
+
+export async function searchDealLossReasons(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+	paginationToken?: string,
+): Promise<INodeListSearchResult> {
+	return paginatedLossReasons(this, filter, paginationToken, 'deal');
 }
 
 async function fetchPipelineStages(

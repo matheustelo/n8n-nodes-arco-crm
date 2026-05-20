@@ -478,7 +478,7 @@ export const dealDescription: INodeProperties[] = [
 				...entityResourceLocator({
 					displayName: 'Loss Reason',
 					name: 'loss_reason_id',
-					searchListMethod: 'searchLossReasons',
+					searchListMethod: 'searchDealLossReasons',
 					urlPathSegment: 'loss-reasons',
 				}),
 				routing: {

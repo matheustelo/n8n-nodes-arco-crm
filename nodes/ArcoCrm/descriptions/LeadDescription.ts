@@ -514,7 +514,7 @@ export const leadDescription: INodeProperties[] = [
 				...entityResourceLocator({
 					displayName: 'Disqualification Reason',
 					name: 'disqualification_reason_id',
-					searchListMethod: 'searchLossReasons',
+					searchListMethod: 'searchLeadLossReasons',
 					urlPathSegment: 'loss-reasons',
 				}),
 				routing: {

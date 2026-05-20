@@ -29,7 +29,8 @@ import {
 	searchDealStages,
 	searchOrigins,
 	searchMemberships,
-	searchLossReasons,
+	searchLeadLossReasons,
+	searchDealLossReasons,
 } from './methods/listSearch';
 import {
 	loadLeadPipelines,
@@ -110,7 +111,8 @@ export class ArcoCrm implements INodeType {
 			searchDealStages,
 			searchOrigins,
 			searchMemberships,
-			searchLossReasons,
+			searchLeadLossReasons,
+			searchDealLossReasons,
 		},
 		loadOptions: {
 			loadLeadPipelines,
