@@ -63,6 +63,15 @@ Campos que referenciam outras entidades (`organization_id`, `person_id`, `pipeli
 
 Selects de Stage dependem do Pipeline correspondente — escolha o pipeline primeiro para que os stages carreguem.
 
+## Idempotência
+
+As operações **Create** de Lead, Deal, Person, Organization, Activity e Note têm um campo opcional **Idempotency Key**. Quando preenchido, é enviado no header `Idempotency-Key`:
+
+- A mesma chave + o mesmo body em até 24h retornam a resposta original — evita duplicatas em retries (timeout, re-execução do workflow).
+- A mesma chave com body diferente retorna `409 IDEMPOTENCY_CONFLICT`.
+
+Use um valor estável por requisição lógica (ex.: um UUID derivado do registro de origem). Deixe vazio para desativar.
+
 ## Desenvolvimento
 
 ```bash
@@ -73,6 +82,10 @@ pnpm build
 ```
 
 ## Changelog
+
+### 0.3.0
+
+- **Idempotency Key** opcional nas operações Create de Lead, Deal, Person, Organization, Activity e Note (header `Idempotency-Key`, TTL 24h). Vazio = comportamento anterior.
 
 ### 0.2.0
 

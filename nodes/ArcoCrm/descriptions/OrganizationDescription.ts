@@ -1,6 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 import { entityResourceLocator } from '../shared/resourceLocator';
 import { limitProperty, returnAllProperty } from '../shared/pagination';
+import { idempotencyKeyProperty } from '../shared/idempotency';
 
 const showFor = (operation: string[]): INodeProperties['displayOptions'] => ({
 	show: { resource: ['organization'], operation },
@@ -129,6 +130,8 @@ export const organizationDescription: INodeProperties[] = [
 			},
 		],
 	},
+
+	idempotencyKeyProperty('organization'),
 
 	// ── List ──────────────────────────────────────────────────────────────────
 	returnAllProperty({ resource: ['organization'], operation: ['list'] }),

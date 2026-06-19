@@ -1,5 +1,6 @@
 import type { INodeProperties } from 'n8n-workflow';
 import { limitProperty, returnAllProperty } from '../shared/pagination';
+import { idempotencyKeyProperty } from '../shared/idempotency';
 
 const showFor = (operation: string[]): INodeProperties['displayOptions'] => ({
 	show: { resource: ['note'], operation },
@@ -88,6 +89,8 @@ export const noteDescription: INodeProperties[] = [
 		description: 'UUID of the lead/deal/person/organization the note is attached to',
 		routing: { send: { type: 'body', property: 'entity_id' } },
 	},
+
+	idempotencyKeyProperty('note'),
 
 	// ── List filters (sent as query, required by API) ────────────────────────
 	{
