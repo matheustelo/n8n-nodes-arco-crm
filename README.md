@@ -83,6 +83,11 @@ pnpm build
 
 ## Changelog
 
+### 0.4.0
+
+- **Busca textual nas listagens** (`List`) de Lead, Deal, Person, Organization e Membership via o novo parâmetro `search` da API (substring, case-insensitive, combinado com os demais filtros via AND, máx. 200 caracteres). Lead/Person buscam por nome, e-mail ou telefone; Deal por título; Organization por nome; Membership por e-mail.
+- **Dropdowns (`From List`) agora buscam no servidor** para Lead, Deal, Person e Organization: em vez de carregar os primeiros 50 registros e filtrar no navegador, enviam `?search=` e pesquisam a base inteira. O debounce do campo é feito pelo próprio editor do n8n. Tags, Origins, Pipelines, Stages, Loss Reasons e Membership seguem com filtro local (o backend não expõe `search` neles, ou — no caso de Membership — só busca por e-mail enquanto a lista exibe o nome).
+
 ### 0.3.0
 
 - **Idempotency Key** opcional nas operações Create de Lead, Deal, Person, Organization, Activity e Note (header `Idempotency-Key`, TTL 24h). Vazio = comportamento anterior.

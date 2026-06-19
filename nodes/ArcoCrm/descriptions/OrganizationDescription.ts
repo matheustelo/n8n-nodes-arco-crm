@@ -2,6 +2,7 @@ import type { INodeProperties } from 'n8n-workflow';
 import { entityResourceLocator } from '../shared/resourceLocator';
 import { limitProperty, returnAllProperty } from '../shared/pagination';
 import { idempotencyKeyProperty } from '../shared/idempotency';
+import { searchFilter } from '../shared/search';
 
 const showFor = (operation: string[]): INodeProperties['displayOptions'] => ({
 	show: { resource: ['organization'], operation },
@@ -144,6 +145,7 @@ export const organizationDescription: INodeProperties[] = [
 		default: {},
 		displayOptions: showFor(['list']),
 		options: [
+			searchFilter('name'),
 			{
 				displayName: 'Owner Membership Name or ID',
 				name: 'owner_membership_id',

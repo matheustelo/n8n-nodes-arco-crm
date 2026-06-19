@@ -82,10 +82,17 @@ export async function searchLeads(
 	filter?: string,
 	paginationToken?: string,
 ): Promise<INodeListSearchResult> {
-	return paginatedSearch<LeadRecord>(this, '/v1/leads', filter, paginationToken, (lead) => ({
-		name: lead.email ? `${lead.name} (${lead.email})` : lead.name,
-		value: lead.id,
-	}));
+	return paginatedSearch<LeadRecord>(
+		this,
+		'/v1/leads',
+		filter,
+		paginationToken,
+		(lead) => ({
+			name: lead.email ? `${lead.name} (${lead.email})` : lead.name,
+			value: lead.id,
+		}),
+		{ supportsServerSearch: true },
+	);
 }
 
 export async function searchPeople(
@@ -93,10 +100,17 @@ export async function searchPeople(
 	filter?: string,
 	paginationToken?: string,
 ): Promise<INodeListSearchResult> {
-	return paginatedSearch<PersonRecord>(this, '/v1/people', filter, paginationToken, (person) => ({
-		name: person.email ? `${person.name} (${person.email})` : person.name,
-		value: person.id,
-	}));
+	return paginatedSearch<PersonRecord>(
+		this,
+		'/v1/people',
+		filter,
+		paginationToken,
+		(person) => ({
+			name: person.email ? `${person.name} (${person.email})` : person.name,
+			value: person.id,
+		}),
+		{ supportsServerSearch: true },
+	);
 }
 
 export async function searchOrganizations(
@@ -110,6 +124,7 @@ export async function searchOrganizations(
 		filter,
 		paginationToken,
 		(org) => ({ name: org.name, value: org.id }),
+		{ supportsServerSearch: true },
 	);
 }
 
@@ -118,10 +133,14 @@ export async function searchDeals(
 	filter?: string,
 	paginationToken?: string,
 ): Promise<INodeListSearchResult> {
-	return paginatedSearch<DealRecord>(this, '/v1/deals', filter, paginationToken, (deal) => ({
-		name: deal.title,
-		value: deal.id,
-	}));
+	return paginatedSearch<DealRecord>(
+		this,
+		'/v1/deals',
+		filter,
+		paginationToken,
+		(deal) => ({ name: deal.title, value: deal.id }),
+		{ supportsServerSearch: true },
+	);
 }
 
 export async function searchActivities(
@@ -204,6 +223,8 @@ export async function searchMemberships(
 		'/v1/memberships',
 		filter,
 		paginationToken,
+		// Server-side search matches e-mail only, but the dropdown shows and
+		// filters by full name — keep client-side filtering so name search works.
 		(member) => ({
 			name: member.email ? `${member.full_name} (${member.email})` : member.full_name,
 			value: member.id,

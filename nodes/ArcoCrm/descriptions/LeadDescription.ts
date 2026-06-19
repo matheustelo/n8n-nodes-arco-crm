@@ -2,6 +2,7 @@ import type { INodeProperties } from 'n8n-workflow';
 import { entityResourceLocator } from '../shared/resourceLocator';
 import { limitProperty, returnAllProperty } from '../shared/pagination';
 import { idempotencyKeyProperty } from '../shared/idempotency';
+import { searchFilter } from '../shared/search';
 
 const showFor = (operation: string[]): INodeProperties['displayOptions'] => ({
 	show: { resource: ['lead'], operation },
@@ -340,6 +341,7 @@ export const leadDescription: INodeProperties[] = [
 		default: {},
 		displayOptions: showFor(['list']),
 		options: [
+			searchFilter('name, email or phone'),
 			{
 				displayName: 'Status',
 				name: 'status',

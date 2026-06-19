@@ -1,6 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 import { entityResourceLocator } from '../shared/resourceLocator';
 import { limitProperty, returnAllProperty } from '../shared/pagination';
+import { searchFilter } from '../shared/search';
 
 export const membershipDescription: INodeProperties[] = [
 	{
@@ -42,4 +43,13 @@ export const membershipDescription: INodeProperties[] = [
 
 	returnAllProperty({ resource: ['membership'], operation: ['list'] }),
 	limitProperty({ resource: ['membership'], operation: ['list'] }),
+	{
+		displayName: 'Filters',
+		name: 'filters',
+		type: 'collection',
+		placeholder: 'Add filter',
+		default: {},
+		displayOptions: { show: { resource: ['membership'], operation: ['list'] } },
+		options: [searchFilter('email')],
+	},
 ];
