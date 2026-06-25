@@ -301,7 +301,7 @@ export async function searchLeadStages(
 	this: ILoadOptionsFunctions,
 	filter?: string,
 ): Promise<INodeListSearchResult> {
-	const pipelineId = readPipelineParam(this, ['lead_pipeline_id']);
+	const pipelineId = readPipelineParam(this, ['lead_pipeline_id', 'filters.lead_pipeline_id']);
 	if (!pipelineId) return { results: [] };
 	const stages = await fetchPipelineStages(this, '/v1/lead-pipelines', pipelineId);
 	const filtered = filter
@@ -314,7 +314,12 @@ export async function searchDealStages(
 	this: ILoadOptionsFunctions,
 	filter?: string,
 ): Promise<INodeListSearchResult> {
-	const pipelineId = readPipelineParam(this, ['pipeline_id', 'deal_pipeline_id']);
+	const pipelineId = readPipelineParam(this, [
+		'pipeline_id',
+		'deal_pipeline_id',
+		'filters.pipeline_id',
+		'filters.deal_pipeline_id',
+	]);
 	if (!pipelineId) return { results: [] };
 	const stages = await fetchPipelineStages(this, '/v1/deal-pipelines', pipelineId);
 	const filtered = filter
