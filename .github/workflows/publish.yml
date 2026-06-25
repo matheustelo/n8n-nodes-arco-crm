@@ -54,7 +54,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           # npm >= 11.5.1 is required for trusted publishing OIDC exchange.
           # lts/* on a current Ubuntu runner already ships npm 11+.
