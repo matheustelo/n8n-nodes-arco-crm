@@ -355,27 +355,27 @@ export const leadDescription: INodeProperties[] = [
 				routing: { send: { type: 'query', property: 'status' } },
 			},
 			{
-				...entityResourceLocator({
-					displayName: 'Lead Pipeline',
-					name: 'lead_pipeline_id',
-					searchListMethod: 'searchLeadPipelines',
-					urlPathSegment: 'lead-pipelines',
-				}),
-				routing: {
-					send: { type: 'query', property: 'lead_pipeline_id', value: '={{ $value.value || $value }}' },
-				},
+				displayName: 'Lead Pipeline Name or ID',
+				name: 'lead_pipeline_id',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadLeadPipelines' },
+				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				routing: { send: { type: 'query', property: 'lead_pipeline_id' } },
 			},
 			{
-				...entityResourceLocator({
-					displayName: 'Lead Stage',
-					name: 'lead_stage_id',
-					searchListMethod: 'searchLeadStages',
-					urlPathSegment: 'lead-stages',
-					description: 'Pick the pipeline first to load its stages',
-				}),
-				routing: {
-					send: { type: 'query', property: 'lead_stage_id', value: '={{ $value.value || $value }}' },
+				displayName: 'Lead Stage Name or ID',
+				name: 'lead_stage_id',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'loadLeadStages',
+					loadOptionsDependsOn: ['filters.lead_pipeline_id'],
 				},
+				default: '',
+				description:
+					'Pick the pipeline first to load its stages. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+				routing: { send: { type: 'query', property: 'lead_stage_id' } },
 			},
 			{
 				displayName: 'Origin Name or ID',

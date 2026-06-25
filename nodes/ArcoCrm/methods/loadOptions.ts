@@ -43,8 +43,33 @@ async function fetchList<T>(
 
 type NamedRecord = { id: string; name: string };
 type MembershipRecord = { id: string; full_name: string; email?: string };
+type PipelineWithStages = NamedRecord & { stages?: NamedRecord[] };
 
 const byName = ({ id, name }: NamedRecord): INodePropertyOptions => ({ name, value: id });
+
+function readPipelineParam(context: ILoadOptionsFunctions, names: string[]): string | undefined {
+	for (const name of names) {
+		try {
+			const value = context.getCurrentNodeParameter(name, { extractValue: true });
+			if (typeof value === 'string' && value) return value;
+		} catch {
+			/* parameter not present on this form — try the next one */
+		}
+	}
+	return undefined;
+}
+
+async function loadStages(
+	context: ILoadOptionsFunctions,
+	path: string,
+	pipelineParamNames: string[],
+): Promise<INodePropertyOptions[]> {
+	const pipelineId = readPipelineParam(context, pipelineParamNames);
+	if (!pipelineId) return [];
+	const pipelines = await fetchList<PipelineWithStages>(context, path, { include_stages: true });
+	const pipeline = pipelines.find((p) => p.id === pipelineId);
+	return (pipeline?.stages ?? []).map(byName);
+}
 
 export async function loadLeadPipelines(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 	return (await fetchList<NamedRecord>(this, '/v1/lead-pipelines')).map(byName);
@@ -74,4 +99,17 @@ export async function loadMemberships(this: ILoadOptionsFunctions): Promise<INod
 		name: m.email ? `${m.full_name} (${m.email})` : m.full_name,
 		value: m.id,
 	}));
+}
+
+export async function loadLeadStages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	return loadStages(this, '/v1/lead-pipelines', ['lead_pipeline_id', 'filters.lead_pipeline_id']);
+}
+
+export async function loadDealStages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	return loadStages(this, '/v1/deal-pipelines', [
+		'pipeline_id',
+		'filters.pipeline_id',
+		'deal_pipeline_id',
+		'filters.deal_pipeline_id',
+	]);
 }

@@ -297,27 +297,27 @@ export const dealDescription: INodeProperties[] = [
 		options: [
 			searchFilter('title'),
 			{
-				...entityResourceLocator({
-					displayName: 'Pipeline',
-					name: 'pipeline_id',
-					searchListMethod: 'searchDealPipelines',
-					urlPathSegment: 'deal-pipelines',
-				}),
-				routing: {
-					send: { type: 'query', property: 'pipeline_id', value: '={{ $value.value || $value }}' },
-				},
+				displayName: 'Pipeline Name or ID',
+				name: 'pipeline_id',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'loadDealPipelines' },
+				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				routing: { send: { type: 'query', property: 'pipeline_id' } },
 			},
 			{
-				...entityResourceLocator({
-					displayName: 'Stage',
-					name: 'stage_id',
-					searchListMethod: 'searchDealStages',
-					urlPathSegment: 'deal-stages',
-					description: 'Pick the pipeline first to load its stages',
-				}),
-				routing: {
-					send: { type: 'query', property: 'stage_id', value: '={{ $value.value || $value }}' },
+				displayName: 'Stage Name or ID',
+				name: 'stage_id',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'loadDealStages',
+					loadOptionsDependsOn: ['filters.pipeline_id'],
 				},
+				default: '',
+				description:
+					'Pick the pipeline first to load its stages. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+				routing: { send: { type: 'query', property: 'stage_id' } },
 			},
 			{
 				displayName: 'Status',

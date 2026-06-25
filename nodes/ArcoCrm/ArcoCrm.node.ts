@@ -39,6 +39,8 @@ import {
 	loadOrigins,
 	loadTags,
 	loadMemberships,
+	loadLeadStages,
+	loadDealStages,
 } from './methods/loadOptions';
 
 export class ArcoCrm implements INodeType {
@@ -121,6 +123,8 @@ export class ArcoCrm implements INodeType {
 			loadOrigins,
 			loadTags,
 			loadMemberships,
+			loadLeadStages,
+			loadDealStages,
 		},
 	};
 }
