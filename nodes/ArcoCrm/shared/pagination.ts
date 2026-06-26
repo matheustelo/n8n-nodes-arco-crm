@@ -1,13 +1,15 @@
-import type { IN8nRequestOperationPaginationGeneric } from 'n8n-workflow';
+import type { IDataObject, IN8nRequestOperationPaginationGeneric } from 'n8n-workflow';
 
 export const cursorPagination: IN8nRequestOperationPaginationGeneric = {
 	type: 'generic',
 	properties: {
 		continue: '={{ !!$response.body?.meta?.next_cursor }}',
 		request: {
-			qs: {
-				cursor: '={{ $response.body.meta.next_cursor }}',
-			},
+			// n8n shallow-merges this `qs` over the request options, so a `qs`
+			// containing only `cursor` would WIPE the list filters from page 2 on.
+			// `$request.qs` holds the original query (status, pipeline, search, …),
+			// so we rebuild the full query and only override the cursor.
+			qs: '={{ { ...$request.qs, cursor: $response.body.meta.next_cursor } }}' as unknown as IDataObject,
 		},
 	},
 };
