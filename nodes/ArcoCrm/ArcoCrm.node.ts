@@ -5,6 +5,7 @@ import {
 } from 'n8n-workflow';
 
 import { leadDescription } from './descriptions/LeadDescription';
+import { campaignDescription } from './descriptions/CampaignDescription';
 import { dealDescription } from './descriptions/DealDescription';
 import { personDescription } from './descriptions/PersonDescription';
 import { organizationDescription } from './descriptions/OrganizationDescription';
@@ -31,6 +32,8 @@ import {
 	searchMemberships,
 	searchLeadLossReasons,
 	searchDealLossReasons,
+	searchCampaigns,
+	searchCampaignStages,
 } from './methods/listSearch';
 import {
 	loadLeadPipelines,
@@ -72,6 +75,7 @@ export class ArcoCrm implements INodeType {
 				options: [
 					{ name: 'Activity', value: 'activity' },
 					{ name: 'Activity Type', value: 'activityType' },
+					{ name: 'Campaign', value: 'campaign' },
 					{ name: 'Deal', value: 'deal' },
 					{ name: 'Lead', value: 'lead' },
 					{ name: 'Membership', value: 'membership' },
@@ -84,6 +88,7 @@ export class ArcoCrm implements INodeType {
 				],
 			},
 			...leadDescription,
+			...campaignDescription,
 			...dealDescription,
 			...personDescription,
 			...organizationDescription,
@@ -113,6 +118,8 @@ export class ArcoCrm implements INodeType {
 			searchMemberships,
 			searchLeadLossReasons,
 			searchDealLossReasons,
+			searchCampaigns,
+			searchCampaignStages,
 		},
 		loadOptions: {
 			loadLeadPipelines,

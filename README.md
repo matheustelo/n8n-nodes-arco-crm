@@ -83,6 +83,11 @@ pnpm build
 
 ## Changelog
 
+### 0.5.0
+
+- **Novo recurso `Campaign`** (API v1.10, scopes `campaigns:read:all` / `campaigns:operate:all`): `List`, `Get`, `Get Stages`, `Get Summary`, `List Participants` (filtros `Stage`/`Outcome`), `Add Participants` (listas de Lead IDs / Person IDs + `Force`), `Change Participant Stage`, `Qualify Participant` (payload JSON, _kind-aware_), `Disqualify Participant` (`Loss Reason` / `Comment`) e `Remove Participant`. Dropdowns `From List` para **Campaign** e **Campaign Stage** (a etapa lê a campanha escolhida no formulário).
+- **Campo `Campaign` no Create de Lead e Person**: `resourceLocator` (From List / By ID / By URL) que envia `campaign_id`, criando o registro já vinculado como participante na primeira etapa da campanha. Requer também o scope `campaigns:operate:all`; a operação é atômica (rollback se o vínculo falhar). Disponível apenas no Create — a API não aceita `campaign_id` no update.
+
 ### 0.4.0
 
 - **Busca textual nas listagens** (`List`) de Lead, Deal, Person, Organization e Membership via o novo parâmetro `search` da API (substring, case-insensitive, combinado com os demais filtros via AND, máx. 200 caracteres). Lead/Person buscam por nome, e-mail ou telefone; Deal por título; Organization por nome; Membership por e-mail.

@@ -137,6 +137,19 @@ export const personDescription: INodeProperties[] = [
 					},
 				},
 			},
+			{
+				...entityResourceLocator({
+					displayName: 'Campaign',
+					name: 'campaign_id',
+					searchListMethod: 'searchCampaigns',
+					urlPathSegment: 'campaigns',
+					description:
+						'Enrolls the new person as a participant in this campaign’s first stage. Requires the campaigns:operate:all scope. Atomic: if the enrollment fails, the person is not created.',
+				}),
+				routing: {
+					send: { type: 'body', property: 'campaign_id', value: '={{ $value.value || $value }}' },
+				},
+			},
 		],
 	},
 

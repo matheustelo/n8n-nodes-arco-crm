@@ -76,6 +76,8 @@ type PipelineRecord = { id: string; name: string; stages?: Array<{ id: string; n
 type OriginRecord = { id: string; name: string };
 type MembershipRecord = { id: string; full_name: string; email?: string };
 type LossReasonRecord = { id: string; name: string };
+type CampaignRecord = { id: string; name: string };
+type CampaignStageRecord = { id: string; name: string };
 
 export async function searchLeads(
 	this: ILoadOptionsFunctions,
@@ -322,6 +324,54 @@ export async function searchDealStages(
 	]);
 	if (!pipelineId) return { results: [] };
 	const stages = await fetchPipelineStages(this, '/v1/deal-pipelines', pipelineId);
+	const filtered = filter
+		? stages.filter((stage) => stage.name.toLowerCase().includes(filter.toLowerCase()))
+		: stages;
+	return { results: filtered.map((stage) => ({ name: stage.name, value: stage.id })) };
+}
+
+export async function searchCampaigns(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+	paginationToken?: string,
+): Promise<INodeListSearchResult> {
+	// The campaigns list endpoint has no server-side `search`, so filter client-side.
+	return paginatedSearch<CampaignRecord>(
+		this,
+		'/v1/campaigns',
+		filter,
+		paginationToken,
+		(campaign) => ({ name: campaign.name, value: campaign.id }),
+	);
+}
+
+async function fetchCampaignStages(
+	context: ILoadOptionsFunctions,
+	campaignId: string,
+): Promise<CampaignStageRecord[]> {
+	try {
+		const baseUrl = await resolveBaseUrl(context);
+		const response = (await context.helpers.httpRequestWithAuthentication.call(context, 'arcoCrmApi', {
+			method: 'GET',
+			url: `${baseUrl}/v1/campaigns/${campaignId}/stages`,
+			json: true,
+		})) as ListEnvelope<CampaignStageRecord>;
+		return response?.data ?? [];
+	} catch (error) {
+		if (isScopeDenied(error)) return [];
+		throw new NodeApiError(context.getNode(), error as JsonObject);
+	}
+}
+
+export async function searchCampaignStages(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+): Promise<INodeListSearchResult> {
+	// Reads the campaign chosen on the same form (top-level `campaign_id`), then
+	// lists that campaign's stages — mirrors searchLeadStages reading the pipeline.
+	const campaignId = readPipelineParam(this, ['campaign_id']);
+	if (!campaignId) return { results: [] };
+	const stages = await fetchCampaignStages(this, campaignId);
 	const filtered = filter
 		? stages.filter((stage) => stage.name.toLowerCase().includes(filter.toLowerCase()))
 		: stages;
