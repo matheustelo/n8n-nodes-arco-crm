@@ -83,6 +83,10 @@ pnpm build
 
 ## Changelog
 
+### 0.6.1
+
+- **Fix**: operações POST sem corpo (`Reopen`, `Claim` de Lead/Deal) ou com campos opcionais vazios (`Disqualify`, `Mark Won`, `Mark Lost`) falhavam com `Body cannot be empty when content-type is set to 'application/json'`. Agora enviam `{}` como corpo padrão; campos preenchidos continuam sendo mesclados normalmente.
+
 ### 0.6.0
 
 - **Mover Lead/Deal de funil no `Change Stage`**: o campo `Lead Pipeline` (Lead) e `Deal Pipeline` (Deal) do `Change Stage` agora é enviado no corpo (`lead_pipeline_id` / `pipeline_id`). Escolha um pipeline diferente para mover a entidade para outro funil (precisa estar `open`); mantenha o atual — ou deixe vazio — para apenas trocar de estágio. Retrocompatível: só é enviado quando preenchido, então workflows que só mudam de etapa continuam idênticos.

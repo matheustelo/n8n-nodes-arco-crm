@@ -141,6 +141,7 @@ export const leadDescription: INodeProperties[] = [
 					request: {
 						method: 'POST',
 						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/disqualify',
+						body: {},
 					},
 				},
 			},
@@ -152,6 +153,7 @@ export const leadDescription: INodeProperties[] = [
 					request: {
 						method: 'POST',
 						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/reopen',
+						body: {},
 					},
 				},
 			},
@@ -185,6 +187,7 @@ export const leadDescription: INodeProperties[] = [
 					request: {
 						method: 'POST',
 						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/claim',
+						body: {},
 					},
 				},
 			},

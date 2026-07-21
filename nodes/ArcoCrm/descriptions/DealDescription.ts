@@ -67,6 +67,7 @@ export const dealDescription: INodeProperties[] = [
 					request: {
 						method: 'POST',
 						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/mark-won',
+						body: {},
 					},
 				},
 			},
@@ -78,6 +79,7 @@ export const dealDescription: INodeProperties[] = [
 					request: {
 						method: 'POST',
 						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/mark-lost',
+						body: {},
 					},
 				},
 			},
@@ -89,6 +91,7 @@ export const dealDescription: INodeProperties[] = [
 					request: {
 						method: 'POST',
 						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/reopen',
+						body: {},
 					},
 				},
 			},
@@ -100,6 +103,7 @@ export const dealDescription: INodeProperties[] = [
 					request: {
 						method: 'POST',
 						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/claim',
+						body: {},
 					},
 				},
 			},
