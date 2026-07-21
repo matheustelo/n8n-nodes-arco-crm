@@ -446,9 +446,17 @@ export const dealDescription: INodeProperties[] = [
 			required: false,
 			searchListMethod: 'searchDealPipelines',
 			urlPathSegment: 'deal-pipelines',
-			description: 'Used only to populate the Stage dropdown — not sent to the API',
+			description:
+				'Populates the Stage dropdown. Pick a different pipeline to move the deal to another funnel (deal must be open); keep the current one to only change stage. Leave empty to change stage within the current pipeline.',
 			displayOptions: showFor(['changeStage']),
 		}),
+		routing: {
+			send: {
+				type: 'body',
+				property: 'pipeline_id',
+				value: '={{ (typeof $value === "object" ? $value.value : $value) || undefined }}',
+			},
+		},
 	},
 
 	// ── Mark Won ──────────────────────────────────────────────────────────────

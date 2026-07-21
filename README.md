@@ -83,6 +83,11 @@ pnpm build
 
 ## Changelog
 
+### 0.6.0
+
+- **Mover Lead/Deal de funil no `Change Stage`**: o campo `Lead Pipeline` (Lead) e `Deal Pipeline` (Deal) do `Change Stage` agora é enviado no corpo (`lead_pipeline_id` / `pipeline_id`). Escolha um pipeline diferente para mover a entidade para outro funil (precisa estar `open`); mantenha o atual — ou deixe vazio — para apenas trocar de estágio. Retrocompatível: só é enviado quando preenchido, então workflows que só mudam de etapa continuam idênticos.
+- **Nova operação `Reopen` no Lead** (`POST /v1/leads/:id/reopen`): reverte um lead `disqualified` para `open`, preservando a etapa atual. Espelha o `Reopen` já existente em Deal.
+
 ### 0.5.0
 
 - **Novo recurso `Campaign`** (API v1.10, scopes `campaigns:read:all` / `campaigns:operate:all`): `List`, `Get`, `Get Stages`, `Get Summary`, `List Participants` (filtros `Stage`/`Outcome`), `Add Participants` (listas de Lead IDs / Person IDs + `Force`), `Change Participant Stage`, `Qualify Participant` (payload JSON, _kind-aware_), `Disqualify Participant` (`Loss Reason` / `Comment`) e `Remove Participant`. Dropdowns `From List` para **Campaign** e **Campaign Stage** (a etapa lê a campanha escolhida no formulário).

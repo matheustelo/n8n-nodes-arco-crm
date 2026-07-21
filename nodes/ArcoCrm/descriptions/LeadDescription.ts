@@ -145,6 +145,17 @@ export const leadDescription: INodeProperties[] = [
 				},
 			},
 			{
+				name: 'Reopen',
+				value: 'reopen',
+				action: 'Reopen a disqualified lead',
+				routing: {
+					request: {
+						method: 'POST',
+						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/reopen',
+					},
+				},
+			},
+			{
 				name: 'Convert',
 				value: 'convert',
 				action: 'Convert a lead',
@@ -239,6 +250,7 @@ export const leadDescription: INodeProperties[] = [
 					'update',
 					'changeStage',
 					'disqualify',
+					'reopen',
 					'convert',
 					'convertPreview',
 					'claim',
@@ -514,9 +526,17 @@ export const leadDescription: INodeProperties[] = [
 			required: false,
 			searchListMethod: 'searchLeadPipelines',
 			urlPathSegment: 'lead-pipelines',
-			description: 'Used only to populate the Stage dropdown — not sent to the API',
+			description:
+				'Populates the Stage dropdown. Pick a different pipeline to move the lead to another funnel (lead must be open); keep the current one to only change stage. Leave empty to change stage within the current pipeline.',
 			displayOptions: showFor(['changeStage']),
 		}),
+		routing: {
+			send: {
+				type: 'body',
+				property: 'lead_pipeline_id',
+				value: '={{ (typeof $value === "object" ? $value.value : $value) || undefined }}',
+			},
+		},
 	},
 
 	// ── Disqualify ────────────────────────────────────────────────────────────
