@@ -140,9 +140,7 @@ export const leadDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'POST',
-						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/disqualify',
-						body: {},
-					},
+						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/disqualify',					},
 				},
 			},
 			{
@@ -152,9 +150,7 @@ export const leadDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'POST',
-						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/reopen',
-						body: {},
-					},
+						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/reopen',					},
 				},
 			},
 			{
@@ -186,9 +182,7 @@ export const leadDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'POST',
-						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/claim',
-						body: {},
-					},
+						url: '=/v1/leads/{{ $parameter.lead_id.value || $parameter.lead_id }}/claim',					},
 				},
 			},
 			{

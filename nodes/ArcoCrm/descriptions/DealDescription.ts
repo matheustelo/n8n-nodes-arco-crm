@@ -66,9 +66,7 @@ export const dealDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'POST',
-						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/mark-won',
-						body: {},
-					},
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/mark-won',					},
 				},
 			},
 			{
@@ -78,9 +76,7 @@ export const dealDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'POST',
-						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/mark-lost',
-						body: {},
-					},
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/mark-lost',					},
 				},
 			},
 			{
@@ -90,9 +86,7 @@ export const dealDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'POST',
-						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/reopen',
-						body: {},
-					},
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/reopen',					},
 				},
 			},
 			{
@@ -102,9 +96,7 @@ export const dealDescription: INodeProperties[] = [
 				routing: {
 					request: {
 						method: 'POST',
-						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/claim',
-						body: {},
-					},
+						url: '=/v1/deals/{{ $parameter.deal_id.value || $parameter.deal_id }}/claim',					},
 				},
 			},
 			{

@@ -83,9 +83,13 @@ pnpm build
 
 ## Changelog
 
+### 0.6.2
+
+- **Fix (definitivo)**: operações POST sem corpo (`Reopen`, `Claim` de Lead/Deal) ou com campos opcionais vazios (`Disqualify`, `Mark Won`, `Mark Lost`) falhavam com `Body cannot be empty when content-type is set to 'application/json'`. Causa raiz: o header `Content-Type: application/json` era fixado em toda requisição. Agora o node usa `json: true`, então o header só é enviado quando há corpo — requisições sem corpo não disparam mais o erro. (A tentativa da 0.6.1 via `body: {}` não resolvia porque o n8n descarta corpos vazios antes de enviar.)
+
 ### 0.6.1
 
-- **Fix**: operações POST sem corpo (`Reopen`, `Claim` de Lead/Deal) ou com campos opcionais vazios (`Disqualify`, `Mark Won`, `Mark Lost`) falhavam com `Body cannot be empty when content-type is set to 'application/json'`. Agora enviam `{}` como corpo padrão; campos preenchidos continuam sendo mesclados normalmente.
+- Tentativa de correção do erro de corpo vazio via `body: {}` (substituída pela 0.6.2).
 
 ### 0.6.0
 

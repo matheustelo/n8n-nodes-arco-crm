@@ -60,8 +60,12 @@ export class ArcoCrm implements INodeType {
 		credentials: [{ name: 'arcoCrmApi', required: true }],
 		requestDefaults: {
 			baseURL: '={{ $credentials.baseUrl }}',
+			// `json: true` makes n8n set `Content-Type: application/json` ONLY when a
+			// body is actually sent. Hardcoding the header made bodyless POSTs (reopen,
+			// claim, disqualify/mark-won/mark-lost with no options) fail with
+			// "Body cannot be empty when content-type is set to 'application/json'".
+			json: true,
 			headers: {
-				'Content-Type': 'application/json',
 				Accept: 'application/json',
 			},
 		},
