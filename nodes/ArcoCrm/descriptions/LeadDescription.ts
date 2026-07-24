@@ -3,6 +3,8 @@ import { entityResourceLocator } from '../shared/resourceLocator';
 import { limitProperty, returnAllProperty } from '../shared/pagination';
 import { idempotencyKeyProperty } from '../shared/idempotency';
 import { searchFilter } from '../shared/search';
+import { localityFields } from '../shared/locality';
+import { customDataFields } from '../shared/customData';
 
 const showFor = (operation: string[]): INodeProperties['displayOptions'] => ({
 	show: { resource: ['lead'], operation },
@@ -21,6 +23,8 @@ const trafficTrackingField: INodeProperties = {
 			name: 'utm_source',
 			type: 'string',
 			default: '',
+			description:
+				'Normalized server-side on write: lowercase, no accents, spaces→_ (e.g. "Black Friday 2026" → "black_friday_2026")',
 			routing: { send: { type: 'body', property: 'utm_source' } },
 		},
 		{
@@ -28,6 +32,7 @@ const trafficTrackingField: INodeProperties = {
 			name: 'utm_medium',
 			type: 'string',
 			default: '',
+			description: 'Normalized server-side on write: lowercase, no accents, spaces→_',
 			routing: { send: { type: 'body', property: 'utm_medium' } },
 		},
 		{
@@ -35,6 +40,8 @@ const trafficTrackingField: INodeProperties = {
 			name: 'utm_campaign',
 			type: 'string',
 			default: '',
+			description:
+				'Normalized server-side on write: lowercase, no accents, spaces→_ (e.g. "Black Friday 2026" → "black_friday_2026")',
 			routing: { send: { type: 'body', property: 'utm_campaign' } },
 		},
 		{
@@ -42,6 +49,7 @@ const trafficTrackingField: INodeProperties = {
 			name: 'utm_term',
 			type: 'string',
 			default: '',
+			description: 'Normalized server-side on write: lowercase, no accents, spaces→_',
 			routing: { send: { type: 'body', property: 'utm_term' } },
 		},
 		{
@@ -49,6 +57,7 @@ const trafficTrackingField: INodeProperties = {
 			name: 'utm_content',
 			type: 'string',
 			default: '',
+			description: 'Normalized server-side on write: lowercase, no accents, spaces→_',
 			routing: { send: { type: 'body', property: 'utm_content' } },
 		},
 		{
@@ -321,19 +330,8 @@ export const leadDescription: INodeProperties[] = [
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
 			trafficTrackingField,
-			{
-				displayName: 'Custom Data (JSON)',
-				name: 'custom_data',
-				type: 'json',
-				default: '{}',
-				routing: {
-					send: {
-						type: 'body',
-						property: 'custom_data',
-						value: '={{ typeof $value === "string" ? JSON.parse($value || "{}") : $value }}',
-					},
-				},
-			},
+			...localityFields(),
+			...customDataFields('getLeadCustomFieldColumns'),
 			{
 				...entityResourceLocator({
 					displayName: 'Campaign',
@@ -433,6 +431,43 @@ export const leadDescription: INodeProperties[] = [
 				default: false,
 				routing: { send: { type: 'query', property: 'converted' } },
 			},
+			{
+				displayName: 'Channel',
+				name: 'channel',
+				type: 'options',
+				default: 'paid_search',
+				description: 'Derived paid-traffic channel — unknown values return an empty list instead of an error',
+				options: [
+					{ name: 'Paid Search', value: 'paid_search' },
+					{ name: 'Paid Social', value: 'paid_social' },
+					{ name: 'Paid Other', value: 'paid_other' },
+					{ name: 'Organic Search', value: 'organic_search' },
+					{ name: 'Social', value: 'social' },
+					{ name: 'Email', value: 'email' },
+					{ name: 'Referral', value: 'referral' },
+					{ name: 'Affiliate', value: 'affiliate' },
+					{ name: 'Display', value: 'display' },
+					{ name: 'Direct', value: 'direct' },
+					{ name: 'Unknown', value: 'unknown' },
+				],
+				routing: { send: { type: 'query', property: 'channel' } },
+			},
+			{
+				displayName: 'UTM Source',
+				name: 'utm_source',
+				type: 'string',
+				default: '',
+				description: 'Matched against the normalized value stored on the lead (lowercase, no accents, spaces→_)',
+				routing: { send: { type: 'query', property: 'utm_source' } },
+			},
+			{
+				displayName: 'UTM Campaign',
+				name: 'utm_campaign',
+				type: 'string',
+				default: '',
+				description: 'Matched against the normalized value stored on the lead (lowercase, no accents, spaces→_)',
+				routing: { send: { type: 'query', property: 'utm_campaign' } },
+			},
 		],
 	},
 
@@ -485,19 +520,8 @@ export const leadDescription: INodeProperties[] = [
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
 			trafficTrackingField,
-			{
-				displayName: 'Custom Data (JSON)',
-				name: 'custom_data',
-				type: 'json',
-				default: '{}',
-				routing: {
-					send: {
-						type: 'body',
-						property: 'custom_data',
-						value: '={{ typeof $value === "string" ? JSON.parse($value || "{}") : $value }}',
-					},
-				},
-			},
+			...localityFields(),
+			...customDataFields('getLeadCustomFieldColumns'),
 		],
 	},
 

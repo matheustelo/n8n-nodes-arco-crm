@@ -3,6 +3,8 @@ import { entityResourceLocator } from '../shared/resourceLocator';
 import { limitProperty, returnAllProperty } from '../shared/pagination';
 import { idempotencyKeyProperty } from '../shared/idempotency';
 import { searchFilter } from '../shared/search';
+import { localityFields } from '../shared/locality';
+import { customDataFields } from '../shared/customData';
 
 const showFor = (operation: string[]): INodeProperties['displayOptions'] => ({
 	show: { resource: ['person'], operation },
@@ -124,19 +126,8 @@ export const personDescription: INodeProperties[] = [
 					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
-			{
-				displayName: 'Custom Data (JSON)',
-				name: 'custom_data',
-				type: 'json',
-				default: '{}',
-				routing: {
-					send: {
-						type: 'body',
-						property: 'custom_data',
-						value: '={{ typeof $value === "string" ? JSON.parse($value || "{}") : $value }}',
-					},
-				},
-			},
+			...localityFields(),
+			...customDataFields('getPersonCustomFieldColumns'),
 			{
 				...entityResourceLocator({
 					displayName: 'Campaign',
@@ -242,19 +233,8 @@ export const personDescription: INodeProperties[] = [
 					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				routing: { send: { type: 'body', property: 'owner_membership_id' } },
 			},
-			{
-				displayName: 'Custom Data (JSON)',
-				name: 'custom_data',
-				type: 'json',
-				default: '{}',
-				routing: {
-					send: {
-						type: 'body',
-						property: 'custom_data',
-						value: '={{ typeof $value === "string" ? JSON.parse($value || "{}") : $value }}',
-					},
-				},
-			},
+			...localityFields(),
+			...customDataFields('getPersonCustomFieldColumns'),
 		],
 	},
 ];

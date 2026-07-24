@@ -75,3 +75,30 @@ export async function loadMemberships(this: ILoadOptionsFunctions): Promise<INod
 		value: m.id,
 	}));
 }
+
+type StateRecord = { id: string; acronym: string; name: string };
+type CityRecord = { id: string | number; name: string };
+
+export async function loadStates(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	const items = await fetchList<StateRecord>(this, '/v1/localities/states');
+	return items.map((s) => ({ name: `${s.name} (${s.acronym})`, value: s.acronym }));
+}
+
+function readStateParam(context: ILoadOptionsFunctions): string | undefined {
+	for (const name of ['state', 'additionalFields.state', 'updateFields.state']) {
+		try {
+			const value = context.getCurrentNodeParameter(name, { extractValue: true });
+			if (typeof value === 'string' && value) return value;
+		} catch {
+			/* parameter not present on this form — try the next one */
+		}
+	}
+	return undefined;
+}
+
+export async function loadCities(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	const state = readStateParam(this);
+	if (!state) return [];
+	const items = await fetchList<CityRecord>(this, `/v1/localities/states/${state}/cities`);
+	return items.map((c) => ({ name: c.name, value: c.id }));
+}

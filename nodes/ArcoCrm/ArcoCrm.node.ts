@@ -42,7 +42,15 @@ import {
 	loadOrigins,
 	loadTags,
 	loadMemberships,
+	loadStates,
+	loadCities,
 } from './methods/loadOptions';
+import {
+	getLeadCustomFieldColumns,
+	getPersonCustomFieldColumns,
+	getOrganizationCustomFieldColumns,
+	getDealCustomFieldColumns,
+} from './methods/resourceMapping';
 
 export class ArcoCrm implements INodeType {
 	description: INodeTypeDescription = {
@@ -132,6 +140,14 @@ export class ArcoCrm implements INodeType {
 			loadOrigins,
 			loadTags,
 			loadMemberships,
+			loadStates,
+			loadCities,
+		},
+		resourceMapping: {
+			getLeadCustomFieldColumns,
+			getPersonCustomFieldColumns,
+			getOrganizationCustomFieldColumns,
+			getDealCustomFieldColumns,
 		},
 	};
 }
