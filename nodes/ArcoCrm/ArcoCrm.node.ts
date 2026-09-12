@@ -16,6 +16,7 @@ import { tagDescription } from './descriptions/TagDescription';
 import { pipelineDescription } from './descriptions/PipelineDescription';
 import { membershipDescription } from './descriptions/MembershipDescription';
 import { originDescription } from './descriptions/OriginDescription';
+import { lookupDescription } from './descriptions/LookupDescription';
 
 import {
 	searchLeads,
@@ -90,6 +91,7 @@ export class ArcoCrm implements INodeType {
 					{ name: 'Campaign', value: 'campaign' },
 					{ name: 'Deal', value: 'deal' },
 					{ name: 'Lead', value: 'lead' },
+					{ name: 'Lookup', value: 'lookup' },
 					{ name: 'Membership', value: 'membership' },
 					{ name: 'Note', value: 'note' },
 					{ name: 'Organization', value: 'organization' },
@@ -111,6 +113,7 @@ export class ArcoCrm implements INodeType {
 			...pipelineDescription,
 			...membershipDescription,
 			...originDescription,
+			...lookupDescription,
 		],
 	};
 

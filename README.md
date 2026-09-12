@@ -50,8 +50,17 @@ Na sua instância n8n:
 | **Pipeline** | List (Lead ou Deal, com `Include Stages` opcional) |
 | **Membership** | List · Get (read-only) |
 | **Origin** | List · Get (read-only) |
+| **Lookup** | Find (busca exata por telefone, e-mail, CPF ou CNPJ em leads, pessoas e organizações) |
 
 Todas as operações usam o contrato `/v1/*` da Public API.
+
+## Lookup (deduplicação)
+
+O recurso **Lookup** (`GET /v1/lookup`) localiza leads, pessoas e organizações por chave exata — **Phone**, **Email**, **CPF** ou **CNPJ** — após normalização feita pela API (máscara removida, DV de CPF/CNPJ validado, telefone brasileiro casa com e sem o nono dígito). Pelo menos uma chave é obrigatória; várias chaves combinam por **OR** e cada resultado informa em `matched_by` quais casaram.
+
+- **Types** escolhe quais entidades buscar (padrão: todas). Cada tipo exige o scope `{tipo}:read:all` na API key.
+- **Limit Per Type** vale por tipo (padrão 10, máx. 50). O endpoint não tem cursor, então não há *Return All*.
+- **Split Into Items** transforma a resposta agrupada (`data.leads`, `data.people`, `data.organizations`) em um item por registro encontrado, com um campo `type` — útil para ramificar “já existe / não existe” com um *IF* logo depois.
 
 ## Dropdowns inteligentes
 
@@ -82,6 +91,10 @@ pnpm build
 ```
 
 ## Changelog
+
+### 0.8.0
+
+- **Novo recurso `Lookup`** (`GET /v1/lookup`): operação **Find** que localiza leads, pessoas e organizações por telefone, e-mail, CPF ou CNPJ (chaves combinam por OR; `matched_by` indica quais casaram). Campos `Types`, `Limit Per Type` e a opção `Split Into Items` (um item por registro, com `type`). O node valida “pelo menos uma chave” antes de chamar a API e só envia as chaves preenchidas.
 
 ### 0.6.2
 
